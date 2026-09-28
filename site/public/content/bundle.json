@@ -1,0 +1,180 @@
+{
+  "gallery": [
+    {
+      "alt": "A blue circle, a lighter square and a pale triangle in a row on grey",
+      "caption": "Three shapes",
+      "date": "2026-04-05",
+      "slug": "three-shapes",
+      "src": "images/three-shapes.svg"
+    },
+    {
+      "alt": "A pale lighthouse against a dark sky, its beam crossing to the right",
+      "caption": "Lighthouse at dusk",
+      "date": "2026-03-20",
+      "slug": "lighthouse-at-dusk",
+      "src": "images/lighthouse.svg"
+    },
+    {
+      "alt": "A blue cat lying along a pale shelf, seen from the side",
+      "caption": "A blue cat",
+      "date": "2026-03-02",
+      "slug": "a-blue-cat",
+      "src": "images/blue-cat.svg"
+    },
+    {
+      "alt": "Three white paper boats on blue water, drawn in flat shapes",
+      "caption": "Paper boats",
+      "date": "2026-02-14",
+      "slug": "paper-boats",
+      "src": "images/paper-boats.svg"
+    }
+  ],
+  "pages": [
+    {
+      "body": "This is a picture blog. Each post is one picture, a title and a date; some carry\na caption or a line or two about how the thing was made.\n\nIt is also a blog you can own. Signing in with Google gives you a blog of your\nown, kept in **your own Google Drive** — not on a server here, because there\nisn't one. Your posts are private until you press Publish, which shares one file\nin your Drive so anyone with the link can read it without signing in to\nanything. Unpublishing takes that back.\n\nThere are no comments, no analytics and no accounts other than Google's. The\n[Privacy](#/privacy) page says exactly what that means.\n\nThe four posts above came with the repository as placeholders, to show the shape\nof a post. Replace them with your own and this page along with them.\n",
+      "image": "",
+      "imageAlt": "",
+      "slug": "about",
+      "title": "About",
+      "updated": "2026-04-05"
+    },
+    {
+      "body": "Creating has no server of its own. It keeps nothing about you, because it has\nnowhere to keep it.\n\n**Signing in.** Signing in with Google lets this site make files in your own\nGoogle Drive and open the files it made. That is the whole of the permission it\nasks for. It cannot see, open or list anything else in your Drive, including\nfiles another app made.\n\n**Where your work lives.** Every post and every picture you add is saved in a\nfolder of your own Google Drive, under your own Google account. It is never\ncopied to a server belonging to this site, because there is no such server.\nNobody running this site can read it.\n\n**What ever leaves your Drive.** Nothing, until you press Publish. Publishing\nshares that one file, and the pictures it points at, so anyone with the link can\nread them. Unpublishing takes the sharing away. Deleting a post deletes its\npicture from your Drive too.\n\n**What your browser keeps.** The site also keeps a copy of your work in your\nbrowser, so it opens at once and works without a connection. Clearing this\nsite's data in your browser removes that copy and leaves the one in your Drive\nalone.\n\n**What is collected.** Nothing. There is no analytics, no advertising, no\ntracking, and no account with anybody but Google.\n\n**Taking it back.** Sign out whenever you like. To withdraw the site's\npermission altogether, remove it at\n[myaccount.google.com/permissions](https://myaccount.google.com/permissions).\nYour files stay in your Drive, yours to keep or delete like any others.\n",
+      "image": "",
+      "imageAlt": "",
+      "slug": "privacy",
+      "title": "Privacy",
+      "updated": "2026-04-05"
+    },
+    {
+      "body": "Creating is free, and is offered as it is.\n\n**What it is.** A place to keep the pictures you make — in your own Google\nDrive — and to publish them as a blog if you want to.\n\n**Your work is yours.** Nothing you write here is claimed by this site. It sits\nin your Drive under your own account, and it stays yours whether you go on using\nthis site or not.\n\n**Publish carefully.** Publish only what is yours to publish, and only what you\nare happy for anyone holding the link to read. A published blog is readable by\nanyone with the link until you unpublish it.\n\n**No promises.** The site is provided without warranty of any kind, and it may\nchange or stop working without notice. Keep your own copy of anything you would\nbe sorry to lose.\n\n**Ending it.** Stop using it whenever you like, and remove its permission at\n[myaccount.google.com/permissions](https://myaccount.google.com/permissions).\n",
+      "image": "",
+      "imageAlt": "",
+      "slug": "terms",
+      "title": "Terms",
+      "updated": "2026-04-05"
+    }
+  ],
+  "posts": [
+    {
+      "body": "A circle, a square and a triangle, in that order, because that is the order they\nwere cut out in. The plan was one shape. The second one went next to it to see\nwhether two of them still looked like anything, and the third went in to fill the\ngap the first two had left at the edge of the paper.\n\nFlat colour, no outlines, and the same grey behind all three so nothing had to\nfight for the front. The triangle is the pale one on purpose: it is the biggest,\nand in blue it took over the whole page.\n",
+      "caption": "",
+      "date": "2026-04-05",
+      "excerpt": "A circle, a square and a triangle, in that order, because that is the order they were cut out in. The plan was one shape. The second one went next to it to see…",
+      "featured": false,
+      "image": "images/three-shapes.svg",
+      "imageAlt": "A blue circle, a lighter square and a pale triangle in a row on grey",
+      "minutes": 1,
+      "slug": "three-shapes",
+      "tags": [
+        "making"
+      ],
+      "title": "Three shapes",
+      "updated": "2026-04-05",
+      "words": 102
+    },
+    {
+      "body": "",
+      "caption": "The beam was the last part, and the hardest",
+      "date": "2026-03-20",
+      "excerpt": "",
+      "featured": false,
+      "image": "images/lighthouse.svg",
+      "imageAlt": "A pale lighthouse against a dark sky, its beam crossing to the right",
+      "minutes": 0,
+      "slug": "lighthouse-at-dusk",
+      "tags": [
+        "painting",
+        "water"
+      ],
+      "title": "Lighthouse at dusk",
+      "updated": "2026-03-20",
+      "words": 0
+    },
+    {
+      "body": "",
+      "caption": "",
+      "date": "2026-03-02",
+      "excerpt": "",
+      "featured": false,
+      "image": "images/blue-cat.svg",
+      "imageAlt": "A blue cat lying along a pale shelf, seen from the side",
+      "minutes": 0,
+      "slug": "a-blue-cat",
+      "tags": [
+        "painting"
+      ],
+      "title": "A blue cat",
+      "updated": "2026-03-02",
+      "words": 0
+    },
+    {
+      "body": "Three boats, folded from one sheet and drawn flat so the water could be the\nloudest thing on the page.\n",
+      "caption": "",
+      "date": "2026-02-14",
+      "excerpt": "Three boats, folded from one sheet and drawn flat so the water could be the loudest thing on the page.",
+      "featured": false,
+      "image": "images/paper-boats.svg",
+      "imageAlt": "Three white paper boats on blue water, drawn in flat shapes",
+      "minutes": 0,
+      "slug": "paper-boats",
+      "tags": [
+        "making",
+        "water"
+      ],
+      "title": "Paper boats",
+      "updated": "2026-02-14",
+      "words": 20
+    }
+  ],
+  "schema": 1,
+  "site": {
+    "author": {
+      "bio": "",
+      "name": ""
+    },
+    "blogId": "",
+    "description": "Pictures, and a little about making them.",
+    "footer": {
+      "links": [
+        {
+          "label": "Home",
+          "to": "/"
+        },
+        {
+          "label": "All pictures",
+          "to": "/gallery"
+        },
+        {
+          "label": "About",
+          "to": "/about"
+        },
+        {
+          "label": "Privacy",
+          "to": "/privacy"
+        },
+        {
+          "label": "Terms",
+          "to": "/terms"
+        }
+      ],
+      "note": "Every post lives in its author's own Google Drive."
+    },
+    "google": {
+      "siteVerification": ""
+    },
+    "language": "en",
+    "nav": [
+      {
+        "label": "Home",
+        "to": "/"
+      },
+      {
+        "label": "About",
+        "to": "/about"
+      }
+    ],
+    "title": "Creating",
+    "url": "https://zhangqi444.github.io/creating/"
+  }
+}

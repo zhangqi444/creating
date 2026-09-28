@@ -1,0 +1,49 @@
+{
+  "title": "Creating",
+  "description": "Pictures, and a little about making them.",
+  "language": "en",
+  "url": "https://zhangqi444.github.io/creating/",
+  "google": {
+    "siteVerification": ""
+  },
+  "author": {
+    "name": "",
+    "bio": ""
+  },
+  "nav": [
+    {
+      "label": "Home",
+      "to": "/"
+    },
+    {
+      "label": "About",
+      "to": "/about"
+    }
+  ],
+  "footer": {
+    "note": "Every post lives in its author's own Google Drive.",
+    "links": [
+      {
+        "label": "Home",
+        "to": "/"
+      },
+      {
+        "label": "All pictures",
+        "to": "/gallery"
+      },
+      {
+        "label": "About",
+        "to": "/about"
+      },
+      {
+        "label": "Privacy",
+        "to": "/privacy"
+      },
+      {
+        "label": "Terms",
+        "to": "/terms"
+      }
+    ]
+  },
+  "blogId": ""
+}

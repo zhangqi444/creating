@@ -1,0 +1,16 @@
+{
+  "name": "Creating",
+  "short_name": "Creating",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F5F7FA",
+  "theme_color": "#2B63C9",
+  "description": "Pictures, and a little about making them.",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
