@@ -101,19 +101,52 @@ are public and belong in the page — the client id names the OAuth app, and the
 browser API key only reads files their owners have already shared. Neither is a
 secret, but restrict the key to this site by HTTP referrer.
 
-1. In the Google Cloud console create a project, then an **OAuth client ID** of
-   type *Web application*. Under *Authorised JavaScript origins* add every
-   address the site is served from:
+All of this is in the Google Cloud console at <https://console.cloud.google.com>,
+signed in as the Google account that should own the project. It is a fifteen
+minute job, once.
+
+1. **A project.** Create one, or pick an existing one. Then *APIs & Services* →
+   *Library* → enable the **Google Drive API**. Nothing works until that is on.
+
+2. **The consent screen.** *APIs & Services* → *OAuth consent screen*. User type
+   **External**; fill in the app name (`Creating`), a support email and a
+   developer email. On the *Scopes* step add
+   `https://www.googleapis.com/auth/drive.file` — it is non-sensitive, so there
+   is no verification review and no unverified-app warning.
+
+   **Then publish it.** A consent screen left in *Testing* only lets the handful
+   of accounts listed as test users sign in, and hands out tokens that expire in
+   a week. *Audience* → **Publish app** → confirm. With only that one
+   non-sensitive scope, publishing takes effect immediately and needs no review.
+
+3. **The OAuth client.** *Credentials* → *Create credentials* → **OAuth client
+   ID** → type *Web application*, name it `Creating (web)`. Under *Authorised
+   JavaScript origins* add every address the site is served from — the origin
+   only, no path:
 
        https://zhangqi444.github.io
        http://localhost:5173          (only for `npm run dev`)
 
-   No redirect URIs are needed: sign-in is a popup token request, not a
-   redirect. The only scope used is `drive.file`, which is non-sensitive, so
-   there is no verification review and no warning screen.
-2. Create an **API key** in the same project and enable the **Google Drive API**.
-   Restrict the key by HTTP referrer to those origins, and by API to Drive.
-3. Give them to the build. Either is enough, and the environment wins:
+   Leave *Authorised redirect URIs* empty: sign-in here is a popup token
+   request, not a redirect. Copy the client id (`….apps.googleusercontent.com`).
+
+4. **The API key.** *Credentials* → *Create credentials* → **API key**. Open it
+   and restrict it, or it is a key anyone can lift from the page and spend your
+   quota with:
+
+   - *Application restrictions* → **Websites**, with these referrers:
+
+         https://zhangqi444.github.io/*
+         http://localhost:5173/*
+
+   - *API restrictions* → **Restrict key** → *Google Drive API* only.
+
+   Copy the key. This is what lets a stranger read a published blog with no
+   sign-in of their own, so a deployment without it can still write blogs but
+   cannot show anyone else's.
+
+5. **Give them to the build.** Either place works, and the environment wins over
+   the file:
 
    - **For the deployed site** — GitHub → *Settings* → *Secrets and variables* →
      *Actions* → *Variables* → **New repository variable**, twice:
@@ -128,11 +161,23 @@ secret, but restrict the key to this site by HTTP referrer.
 
          { "client_id": "….apps.googleusercontent.com", "api_key": "…" }
 
-     It is committed empty on purpose, so a clone of this repository builds
-     without sign-in rather than inheriting somebody else's Google project.
-4. Reload the site. The header grows a pencil that opens the studio: sign in
+     It is committed empty on purpose. Putting real values in it works for the
+     deployed build too, but then every fork of this repository inherits this
+     Google project and spends its quota, which is why the repository variables
+     above are the better home for a deployment.
+
+6. **Reload the site.** The header grows a pencil that opens the studio: sign in
    once, and your posts and pictures are kept in a `Creating` folder in that
    Google account's Drive.
+
+If sign-in fails, the message says which of the four things is wrong:
+*origin_mismatch* or *invalid_client* means the address you are on is not in the
+client's authorised origins (the `github.io` origin has no `/creating` path in
+it); *access_denied* means the Drive permission was refused on the consent
+screen; *This app is blocked* or a test-user error means the consent screen is
+still in *Testing*; and a blog that will not load for a stranger while your own
+posts are fine means the API key is missing, unrestricted to the wrong referrer,
+or not allowed to call the Drive API.
 
 To make this deployment show a published Drive blog instead of the committed
 posts, put that blog's file id in `blogId` in `content/site.json`. Any blog is
