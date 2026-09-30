@@ -16,7 +16,7 @@ files in `content/posts`; nothing else is needed to publish one.
 
 There is no backend and no CMS. The site builds with Vite and deploys to GitHub
 Pages from `.github/workflows/pages.yml`, and lives at
-<https://zhangqi444.github.io/creating/>.
+<https://creating.sheilazhang.org/>.
 
 ## Where it came from
 
@@ -124,7 +124,8 @@ minute job, once.
    JavaScript origins* add every address the site is served from — the origin
    only, no path:
 
-       https://zhangqi444.github.io
+       https://creating.sheilazhang.org
+       https://zhangqi444.github.io   (the Pages address, if you use it too)
        http://localhost:5173          (only for `npm run dev`)
 
    Leave *Authorised redirect URIs* empty: sign-in here is a popup token
@@ -136,6 +137,7 @@ minute job, once.
 
    - *Application restrictions* → **Websites**, with these referrers:
 
+         https://creating.sheilazhang.org/*
          https://zhangqi444.github.io/*
          http://localhost:5173/*
 
@@ -205,31 +207,36 @@ cannot enable Pages by itself, and `configure-pages` fails the deploy with
 (`base: './'`) and routing is by hash, so the same build works at a domain root
 and under `/creating/` alike.
 
-## A custom domain, later
+## The address
 
-The address is `url` in `content/site.json`. The build writes it into the head
-(canonical link, `og:` tags) and into `dist/robots.txt` and `dist/sitemap.xml`.
-While `url` is the default `https://zhangqi444.github.io/creating/` the build
-writes **no** `CNAME`, because that address is not a custom domain and a CNAME
+The site is at <https://creating.sheilazhang.org/>, a custom domain in front of GitHub Pages.
+
+The address itself is `url` in `content/site.json`. The build writes it into the
+head (canonical link, `og:` tags), into `dist/robots.txt` and `dist/sitemap.xml`,
+and into `dist/CNAME`, which is how Pages is told the domain. That last file is
+written only for a real domain: a `*.github.io` address is not one, and a CNAME
 naming it would make Pages serve this project from the user site and take both
 down.
 
-To move to a real domain:
+Three things live outside the repository, and only the owner can do them:
 
-1. Set `url` in `content/site.json` to `https://example.org/` and commit. The
-   next build writes `dist/CNAME` from it.
-2. At the DNS host, point the apex at the four GitHub Pages `A` records
-   (`185.199.108-111.153`) and the four matching `AAAA` records
-   (`2606:50c0:800{0,1,2,3}::153`), and `www` at `zhangqi444.github.io` as a
-   `CNAME`. On Cloudflare every one of them must be **grey (DNS only)**: orange
-   proxies the name and GitHub then cannot verify the domain or issue a
-   certificate.
-3. Do not also type the domain into Settings → Pages — the build's CNAME and the
-   setting then fight on every deploy. After the first deploy on the new name,
-   tick **Enforce HTTPS** once the certificate is issued, which can take about
-   fifteen minutes.
-4. Add the domain to the OAuth client's authorised origins and the API key's
-   referrer restrictions, or the studio stops signing in at the new address.
+1. **DNS** for `creating.sheilazhang.org`: a `CNAME` record pointing at
+   `zhangqi444.github.io`, or, on an apex name, the four GitHub Pages `A`
+   records (`185.199.108-111.153`) and the four matching `AAAA` records
+   (`2606:50c0:800{0,1,2,3}::153`). On Cloudflare every one of them must be
+   **grey (DNS only)**: orange proxies the name and GitHub then cannot verify
+   the domain or issue a certificate.
+2. **Enforce HTTPS** in Settings → Pages, once the certificate is issued, which
+   can take about fifteen minutes after the domain first resolves.
+3. **The Google client**, if the domain changes again: the new origin has to go
+   in the OAuth client's authorised origins and the API key's referrer
+   restrictions, or the studio stops signing in at the new address.
+
+There is also a `CNAME` file at the repository root, left from setting the
+domain while Pages was still deploying from a branch. With **Source: GitHub
+Actions** nothing reads it — the one the build writes into `dist/` is what
+counts — so it can be deleted whenever, and editing it will not change the
+address.
 
 For **Google Search Console**, a *Domain* property verified by a `TXT` record
 needs nothing in the repository. The *URL prefix* + *HTML tag* route works too:

@@ -50,12 +50,16 @@ Claude-Session: <session url>
   workflow cannot turn Pages on by itself: until the owner enables it once in
   Settings → Pages, `configure-pages` fails with "Resource not accessible by
   integration" even though the bundle check and the build before it pass.
-- `url` in `content/site.json` is `https://zhangqi444.github.io/creating/` — the
-  default Pages address, which is **not** a custom domain. The build writes no
-  `CNAME` for a `*.github.io` host on purpose: a CNAME naming it would make Pages
-  try to serve the user site from this build and take both down. Point `url` at a
-  real domain and the CNAME appears; the DNS record and Search Console are the
-  owner's, and the README lists them in order.
+- `url` in `content/site.json` is `https://creating.sheilazhang.org/` — a real custom
+  domain, so the build writes `dist/CNAME` from it and that is what tells Pages
+  the address. A `*.github.io` address is deliberately not given a CNAME: naming
+  it there makes Pages serve this project from the user site and takes both
+  down. The DNS record, Enforce HTTPS and Search Console are the owner's, and
+  the README lists them in order.
+- If the live site ever shows the README instead of the blog, Pages has been put
+  back on **Deploy from a branch**: in that mode GitHub runs Jekyll over the
+  repository root and serves `README.md`. The fix is Settings → Pages → Source →
+  **GitHub Actions**, nothing in the code.
 - Pictures must be in `site/public/images/`; `make_bundle.py` refuses a post
   whose `image` is not there.
 - The deployed site usually cannot be opened from the remote sandbox — GitHub's

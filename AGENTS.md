@@ -52,9 +52,9 @@ topic or a line or two of body are optional and most posts have none. The UI is
 built around that: no excerpt where there is no text, no reading time under fifty
 words, and an untitled post shows its date as its heading.
 
-Lives at <https://zhangqi444.github.io/creating/>. Every path in the build is
-relative and routing is by hash, so a custom domain added later serves the same
-build.
+Lives at <https://creating.sheilazhang.org/> (a custom domain on GitHub Pages; also reachable at
+<https://zhangqi444.github.io/creating/>). Every path in the build is relative
+and routing is by hash, so both addresses serve the same build.
 
 ## Repository layout
 
