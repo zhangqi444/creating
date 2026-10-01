@@ -35,10 +35,11 @@ the other.
 
 ## What is in it today
 
-The four posts, three pages and four pictures committed here are **placeholder
-seed content** — nobody's work, describing nobody — written to show the shape of
-a post and to give the test suites something real to walk. Replace them with your
-own, and this section with them.
+135 posts by a nine-year-old, from November 2023 to August 2026 — mostly a
+picture, a title and a date, with a line or two on the fourteen that have one.
+They came from `zhangqi444/the-little-me`, and the pictures with them: every one
+was downloaded out of the old blog's CDN into `site/public/images/`, so the site
+depends on no host but its own. Her writing is not to be edited; see AGENTS.md.
 
 ## The two halves
 

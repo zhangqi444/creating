@@ -66,10 +66,10 @@ Claude-Session: <session url>
   and Cloudflare's hosts answer 403 at the proxy's CONNECT — so a change is
   verified by the suites and the workflow's conclusion, never by loading the live
   page.
-- The posts, pages and pictures in `content/` are placeholder seed content (see
-  AGENTS.md). They are there to be replaced, not preserved — but keep one post
-  with a body, one without and one with a topic, or the reading suite stops
-  exercising those paths.
+- The posts in `content/` are a child's, carried over with her pictures (see
+  AGENTS.md). Her writing is never edited and her name appears nowhere. The
+  pictures live in `site/public/images/`; nothing is fetched from another host,
+  and the reading suite fails if that ever changes.
 
 ## Verification habit
 

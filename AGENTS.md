@@ -144,14 +144,32 @@ picture in one, and cannot read it again once it is withdrawn.
   site down with this one. `google.siteVerification` is the token from Google
   Search Console; while it is empty no verification tag is written.
 
-### The seed content
+### The content, and whose it is
 
-The four posts, the three standing pages and the four SVG pictures committed
-here are **placeholders**, written to show the shape of a post and to give the
-suites something real to walk. They are nobody's work and describe nobody. Delete
-them when the blog has posts of its own — and when you do, keep at least one
-post with a body, one without, and one carrying a topic, or the reading suite
-stops exercising those paths.
+The 135 posts here are a nine-year-old's, carried across from
+`zhangqi444/the-little-me` with her pictures, which came to that repository from
+an earlier Ghost blog. They run from November 2023 to August 2026. All but
+fourteen are a title, a date and one picture with no body at all; nineteen were
+never named and show their date as their heading; two carry a topic. The About
+page is hers. Privacy and Terms are this repository's own, because they describe
+this site rather than the one the posts came from.
+
+Three rules follow from that, and they are not negotiable:
+
+- **Her writing is sacred.** Never rewrite, shorten or "improve" the text of a
+  post. Fix a typo only when asked.
+- **Her name appears nowhere.** Not in the site, the docs or a commit message.
+  The owner asked for that directly, and it holds here as it does there.
+- **Never invent a fact about her.** The About page is the one place with prose
+  about her, and it is not to be extended with made-up biography.
+
+The pictures are in `site/public/images/`, 135 files and about 77 MB, downloaded
+from the old blog's CDN by `site/fetch_images.py`. They are not served from
+anywhere else and must not go back to being: the reading suite fails if the page
+fetches anything from another host, which is the check that keeps this true.
+
+If posts are ever replaced wholesale, keep at least one with a body, one without
+and one carrying a topic, or the reading suite stops exercising those paths.
 
 ## Commands
 
@@ -212,7 +230,8 @@ Both suites must pass before a commit.
 ## Content rules
 
 - **An author's writing is theirs.** Never rewrite, shorten or "improve" the text
-  of a post that is not seed content. Fix a typo only when asked.
+  of a post. Fix a typo only when asked. For the posts committed here, see *The
+  content, and whose it is* above — those rules are stricter and they win.
 - Short, concrete, no hype, no exclamation marks — in the posts and in everything
   the repository writes around them: a label, an empty state, a hint in a form.
 - Every picture has an `alt` text. The studio nags for one, and so should a
