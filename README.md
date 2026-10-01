@@ -195,15 +195,15 @@ posting strangers' addresses at somebody else's endpoint.
 
 Two halves:
 
-- **`worker/`** — a Cloudflare Worker holding the Resend API key. The site is a
+- **`subscribe/`** — a Vercel function holding the Resend API key. The site is a
   static bundle, so a key it carried would be readable by anyone viewing source;
   a key that can send mail as this domain is not something to hand out. The
-  Worker takes one address, adds it to a Resend audience and forgets it. It
-  stores nothing. `worker/README.md` has the deploy steps.
-- **`newsletter.endpoint`** in `content/site.json` — the Worker's address. Set
+  function takes one address, adds it to a Resend segment and forgets it. It
+  stores nothing. `subscribe/README.md` has the deploy steps.
+- **`newsletter.endpoint`** in `content/site.json` — the function's address. Set
   it, re-run `python3 site/make_bundle.py`, commit, and the form appears.
 
-The subscriber list lives with Resend, in an audience; sending is done from
+The subscriber list lives with Resend, in a segment; sending is done from
 there too. Nothing about a subscriber is ever stored in this repository.
 
 The endpoint drops anything that fills its honeypot field, and answers an

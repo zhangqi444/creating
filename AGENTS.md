@@ -106,11 +106,11 @@ service, no analytics. The only account system is Google's, and the only storage
 for a blog is the author's own Drive: `drive.file` scope, so the app can never
 see a file it did not create.
 
-The single exception is `worker/`, the subscribe endpoint, added deliberately
+The single exception is `subscribe/`, the subscribe endpoint, added deliberately
 and written down here rather than slipped in. It exists because a Resend API key
 can send mail as this domain and a static page cannot keep one: anything the
-site carries is readable by anyone who views source. The Worker holds the key,
-accepts one address, hands it to a Resend audience and forgets it. It stores
+site carries is readable by anyone who views source. The function holds the key,
+accepts one address, adds it to a Resend segment and forgets it. It stores
 nothing, reads nothing, and cannot see the blog. Anything beyond that — a second
 route, a counter, a record of who visited — is a new backend and needs the same
 argument made again in this file.
@@ -251,7 +251,7 @@ Both suites must pass before a commit.
 
 ## Hard rules
 
-1. **No backend but `worker/`, no accounts but Google's, no comments, no
+1. **No backend but `subscribe/`, no accounts but Google's, no comments, no
    third-party analytics or fonts.** The site is the repository and the one
    endpoint described under *Tech stack*, and nothing else. A key that can send
    mail as this domain never enters `site/`, `content/`, or a commit.
