@@ -3051,7 +3051,7 @@
       }
     ],
     "newsletter": {
-      "endpoint": ""
+      "endpoint": "https://creating-subscribe-zhangqi444s-projects.vercel.app/api/subscribe"
     },
     "title": "Creating",
     "url": "https://creating.sheilazhang.org/"

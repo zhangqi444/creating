@@ -47,6 +47,6 @@
   },
   "blogId": "",
   "newsletter": {
-    "endpoint": ""
+    "endpoint": "https://creating-subscribe-zhangqi444s-projects.vercel.app/api/subscribe"
   }
 }

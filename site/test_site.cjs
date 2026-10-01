@@ -222,13 +222,20 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     // the 400 below is deliberate: it is how the refusal path is exercised
     const pg = await ctx.newPage(); const errs = errorsOf(pg, /status of 400/);
     try {
-      // what is committed: no endpoint, so the block renders nothing at all
+      /* Off first. A deployment with no endpoint — which is what a fork of this
+         repository is — must render nothing at all rather than a form that
+         posts strangers' addresses at somebody else's function. Written out
+         rather than read from the committed bundle, so this stays a real check
+         after this deployment set an endpoint of its own. */
+      const off = JSON.parse(original);
+      off.site.newsletter = { endpoint: '' };
+      fs.writeFileSync(bundle, JSON.stringify(off));
       await pg.goto(base, { waitUntil: 'networkidle' });
       await pg.waitForSelector('[data-testid=hero]');
       check('no subscribe form while no endpoint is configured',
         (await pg.$('[data-testid=subscribe]')) === null);
 
-      // turned on the way a deployment does it: one value in site.json
+      // then on, the way a deployment does it: one value in site.json
       const on = JSON.parse(original);
       on.site.newsletter = { endpoint: ENDPOINT };
       fs.writeFileSync(bundle, JSON.stringify(on));
