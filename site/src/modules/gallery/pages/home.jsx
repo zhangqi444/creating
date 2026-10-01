@@ -5,6 +5,7 @@ import { C, tags } from "@/modules/gallery/content"
 import { href } from "@/lib/router"
 import { Button } from "@/components/ui/button"
 import { PostCard } from "@/modules/gallery/post-card"
+import { Subscribe } from "@/components/subscribe"
 import { useTitle } from "@/components/page-title"
 
 /* Three years of pictures is far too much for one screen, so the front page
@@ -49,6 +50,7 @@ export function Home() {
             No posts yet. Add a Markdown file to <code>content/posts</code> and rebuild.
           </p>
         )}
+        <Subscribe className="mt-14" />
         {allTags.length > 0 && (
           <section className="mt-14" aria-labelledby="tags-heading">
             <h2 id="tags-heading" className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Topics</h2>

@@ -124,6 +124,9 @@ def main():
     # it is set the site reads that blog; when it is empty the committed posts
     # below are what visitors see.
     site.setdefault("blogId", "")
+    # Where the subscribe form posts. Empty means there is no newsletter and the
+    # form is not rendered at all, which is what a fork of this repository gets.
+    site.setdefault("newsletter", {"endpoint": ""})
     posts = [read_post(p) for p in sorted((CONTENT / "posts").glob("*.md"))]
     pages = [read_page(p) for p in sorted((CONTENT / "pages").glob("*.md"))]
     seen = set()

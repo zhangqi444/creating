@@ -27,7 +27,11 @@ const exe = fs.existsSync('/opt/pw-browsers/chromium-1194/chrome-linux/chrome') 
 
 let failures = 0;
 function check(name, ok, extra) { console.log((ok ? '  ok   ' : '  FAIL ') + name + (extra ? '  ' + extra : '')); if (!ok) failures++; }
-const errorsOf = (pg) => { const errs = []; pg.on('pageerror', (e) => errs.push('PAGEERR ' + e.message)); pg.on('console', (m) => { if (m.type() === 'error' && !/favicon|sw\.js|net::ERR_FAILED/.test(m.text())) errs.push('CONSOLE ' + m.text()); }); return errs; };
+/* `allow` is for a section that provokes a failure on purpose: the newsletter
+   checks stub a 400 to see the refusal reach the reader, and the browser logs
+   that as a console error. Everywhere else the filter stays strict, so a real
+   error cannot hide behind a blanket exemption. */
+const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => errs.push('PAGEERR ' + e.message)); pg.on('console', (m) => { if (m.type() === 'error' && !/favicon|sw\.js|net::ERR_FAILED/.test(m.text()) && !(allow && allow.test(m.text()))) errs.push('CONSOLE ' + m.text()); }); return errs; };
 
 (async () => {
   const { srv, base } = await serve(8160);
@@ -203,6 +207,75 @@ const errorsOf = (pg) => { const errs = []; pg.on('pageerror', (e) => errs.push(
 
     check('nothing is loaded from another host', offsite.length === 0, [...new Set(offsite)].join(' | '));
     check('no page errors', errs.length === 0, errs.join(' | '));
+    await ctx.close();
+  }
+
+  /* ---- the newsletter: off unless a deployment turns it on ---- */
+  console.log('\n== newsletter ==');
+  {
+    const bundle = path.join(DIST, 'content', 'bundle.json');
+    const original = fs.readFileSync(bundle, 'utf8');
+    // Same-origin on purpose: a cross-origin stub would be testing the
+    // browser's CORS rather than this site's form.
+    const ENDPOINT = base + 'api/subscribe';
+    const ctx = await b.newContext({ viewport: { width: 1280, height: 860 } });
+    // the 400 below is deliberate: it is how the refusal path is exercised
+    const pg = await ctx.newPage(); const errs = errorsOf(pg, /status of 400/);
+    try {
+      // what is committed: no endpoint, so the block renders nothing at all
+      await pg.goto(base, { waitUntil: 'networkidle' });
+      await pg.waitForSelector('[data-testid=hero]');
+      check('no subscribe form while no endpoint is configured',
+        (await pg.$('[data-testid=subscribe]')) === null);
+
+      // turned on the way a deployment does it: one value in site.json
+      const on = JSON.parse(original);
+      on.site.newsletter = { endpoint: ENDPOINT };
+      fs.writeFileSync(bundle, JSON.stringify(on));
+
+      let reply = { status: 200, body: '{"ok":true}' };
+      const posted = [];
+      await ctx.route(ENDPOINT, (r) => {
+        posted.push(JSON.parse(r.request().postData() || '{}'));
+        return r.fulfill({ status: reply.status, contentType: 'application/json', body: reply.body });
+      });
+
+      await pg.goto(base, { waitUntil: 'networkidle' });
+      await pg.waitForSelector('[data-testid=subscribe]');
+      check('the form appears once an endpoint is set', true);
+      check('the honeypot is hidden from people', !(await pg.isVisible('[data-testid=subscribe-trap]')));
+
+      await pg.locator('[data-testid=subscribe]').first().screenshot({ path: 'shot-newsletter.png' });
+      await pg.fill('[data-testid=subscribe-email]', 'reader@example.com');
+      await pg.click('[data-testid=subscribe-submit]');
+      await pg.waitForSelector('[data-testid=subscribe-done]');
+      check('signing up posts the address to the endpoint',
+        posted.length === 1 && posted[0].email === 'reader@example.com', JSON.stringify(posted[0]));
+      check('and sends the honeypot empty, so the endpoint can tell a person from a bot',
+        posted[0].company === '');
+      check('the form is replaced by a thank you', (await pg.$('[data-testid=subscribe-email]')) === null);
+
+      // a refusal is shown, not swallowed
+      reply = { status: 400, body: '{"error":"That does not look like an email address."}' };
+      await pg.goto(base + '#/post/' + lead.slug, { waitUntil: 'networkidle' });
+      await pg.waitForSelector('[data-testid=subscribe]');
+      check('a post carries the form too', true);
+      await pg.fill('[data-testid=subscribe-email]', 'reader@example.com');
+      await pg.click('[data-testid=subscribe-submit]');
+      await pg.waitForSelector('[data-testid=subscribe-error]');
+      check('the endpoint\'s refusal is shown to the reader',
+        (await pg.textContent('[data-testid=subscribe-error]')).includes('does not look like'));
+
+      /* Someone else's published blog, read through this deployment. Offering
+         to sign a reader up to *our* newsletter from under their name would be
+         a small lie, so the block is not there. */
+      await pg.goto(base + '#/b/aaaaaaaaaaaaaaaaaaaa', { waitUntil: 'networkidle' });
+      await pg.waitForSelector('[data-testid=hero]');
+      check('no subscribe form on somebody else\'s blog',
+        (await pg.$('[data-testid=subscribe]')) === null);
+
+      check('no page errors', errs.length === 0, errs.join(' | '));
+    } finally { fs.writeFileSync(bundle, original); }
     await ctx.close();
   }
 

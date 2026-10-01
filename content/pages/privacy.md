@@ -1,6 +1,6 @@
 ---
 title: Privacy
-updated: 2026-04-05
+updated: 2026-10-01
 ---
 
 Creating has no server of its own. It keeps nothing about you, because it has
@@ -26,7 +26,17 @@ browser, so it opens at once and works without a connection. Clearing this
 site's data in your browser removes that copy and leaves the one in your Drive
 alone.
 
-**What is collected.** Nothing. There is no analytics, no advertising, no
+**The newsletter.** If you give us your email address, that is the one thing
+about you this site keeps. It is held by Resend, who send the mail, so that we
+can tell you when there is something new here. It is used for nothing else, it
+is never sold and never passed on, and every email has a link that takes you off
+the list for good. You can also ask us to remove it and we will.
+
+The address goes to a small endpoint of our own rather than straight from the
+page, because the key that sends the mail cannot safely live in a web page. That
+endpoint keeps no copy of anything.
+
+**What else is collected.** Nothing. There is no analytics, no advertising, no
 tracking, and no account with anybody but Google.
 
 **Taking it back.** Sign out whenever you like. To withdraw the site's

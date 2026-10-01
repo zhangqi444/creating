@@ -186,6 +186,31 @@ To make this deployment show a published Drive blog instead of the committed
 posts, put that blog's file id in `blogId` in `content/site.json`. Any blog is
 also readable at `#/b/<fileId>` without configuring anything.
 
+## The newsletter
+
+Readers can sign up to hear when there is something new. The form is on the
+front page and at the foot of every post, and it is **hidden until a deployment
+turns it on**, so a fork of this repository offers no newsletter rather than
+posting strangers' addresses at somebody else's endpoint.
+
+Two halves:
+
+- **`worker/`** — a Cloudflare Worker holding the Resend API key. The site is a
+  static bundle, so a key it carried would be readable by anyone viewing source;
+  a key that can send mail as this domain is not something to hand out. The
+  Worker takes one address, adds it to a Resend audience and forgets it. It
+  stores nothing. `worker/README.md` has the deploy steps.
+- **`newsletter.endpoint`** in `content/site.json` — the Worker's address. Set
+  it, re-run `python3 site/make_bundle.py`, commit, and the form appears.
+
+The subscriber list lives with Resend, in an audience; sending is done from
+there too. Nothing about a subscriber is ever stored in this repository.
+
+The endpoint drops anything that fills its honeypot field, and answers an
+address already on the list exactly as it answers a new one — telling someone
+"you are already subscribed" would turn the form into a way to test whether a
+given address reads this blog.
+
 ## Build
 
     cd site

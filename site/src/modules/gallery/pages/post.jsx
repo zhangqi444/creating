@@ -7,6 +7,7 @@ import { fmtDate, titleOf } from "@/lib/format"
 import { href } from "@/lib/router"
 import { Markdown } from "@/components/markdown"
 import { PostCard, PostMeta } from "@/modules/gallery/post-card"
+import { Subscribe } from "@/components/subscribe"
 import { useTitle } from "@/components/page-title"
 import { NotFound } from "@/modules/gallery/pages/not-found"
 
@@ -65,6 +66,7 @@ export function Post({ slug }) {
           </div>
         </section>
       )}
+      <Subscribe className="mx-auto mt-16 max-w-3xl" />
     </article>
   )
 }

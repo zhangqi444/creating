@@ -45,5 +45,8 @@
       }
     ]
   },
-  "blogId": ""
+  "blogId": "",
+  "newsletter": {
+    "endpoint": ""
+  }
 }
