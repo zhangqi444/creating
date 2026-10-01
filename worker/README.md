@@ -1,5 +1,11 @@
 # The subscribe endpoint
 
+> **Do not deploy this yet.** It is written against Resend's `audiences`
+> endpoint, and this account has no audiences — its model is **contacts and
+> segments**. The call in `src/index.js` has to be changed to the contacts
+> endpoint, passing the segment id, before any of the below is worth doing. See
+> the note at the top of that file.
+
 One Cloudflare Worker, because the site cannot keep a secret. A Resend API key
 can send mail as `sheilazhang.org`; the site is a static bundle, so anything it
 carries is readable by anyone who views source. The key lives here instead.

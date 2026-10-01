@@ -19,6 +19,18 @@
 
 const RESEND = "https://api.resend.com"
 
+/* NOT DEPLOYABLE AS IT STANDS. This posts to /audiences/{id}/contacts, which is
+ * the older Resend shape. The account this site belongs to has no audiences at
+ * all: its model is contacts and segments, and adding one takes an email plus a
+ * list of segment ids. Both routes still answer, so the mistake would show up
+ * as a failed signup rather than a 404, which is the worse way to find out.
+ *
+ * Before deploying, change the call below to the contacts endpoint and pass the
+ * segment id, and rename RESEND_AUDIENCE_ID to match. The exact request body is
+ * the one thing not confirmed here — resend.com/docs is unreachable from the
+ * sandbox this was written in — so confirm it against the dashboard or a single
+ * manual call first. */
+
 /* Deliberately loose. The only authority on whether an address exists is the
    confirmation mail Resend sends to it; a cleverer regex here would reject real
    addresses and still let nonsense through. */
