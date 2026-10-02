@@ -8,6 +8,13 @@
  * repository offers no newsletter rather than posting strangers' addresses at
  * somebody else's function.
  *
+ * It says "you are on the list" because that is what happens: the endpoint adds
+ * the address to a segment and nothing else. It used to say "check your email
+ * to confirm it is you", which was a promise of a confirmation mail that
+ * nothing sends — the first person to use the form went looking for an email
+ * that did not exist. If double opt-in is ever added, this line changes back in
+ * the same commit as the thing that sends it, not before.
+ *
  * It is not shown on `#/b/<id>`. That address is somebody else's published blog
  * being read through this deployment, and offering to sign a reader up to *our*
  * newsletter from under their name would be a small lie. */
@@ -66,7 +73,7 @@ export function Subscribe({ className }) {
 
       {state === "done" ? (
         <p className="mt-4 text-sm font-medium text-primary" data-testid="subscribe-done" role="status">
-          Thank you. Check your email to confirm it is you.
+          Thank you. You are on the list.
         </p>
       ) : (
         <form className="mt-4 flex flex-col gap-2 sm:flex-row" onSubmit={submit}>
