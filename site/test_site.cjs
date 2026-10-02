@@ -33,21 +33,46 @@ function check(name, ok, extra) { console.log((ok ? '  ok   ' : '  FAIL ') + nam
    error cannot hide behind a blanket exemption. */
 const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => errs.push('PAGEERR ' + e.message)); pg.on('console', (m) => { if (m.type() === 'error' && !/favicon|sw\.js|net::ERR_FAILED/.test(m.text()) && !(allow && allow.test(m.text()))) errs.push('CONSOLE ' + m.text()); }); return errs; };
 
-/* A full-page screenshot of a page with lazy pictures shows grey boxes: the
-   pictures below the fold were never in view, so the browser never asked for
-   them. That makes the one artefact a person actually looks at the least
-   trustworthy thing the suite produces. So scroll the page first and wait for
-   every picture to finish, then shoot. */
-const settle = async (pg) => {
-  await pg.evaluate(async () => {
-    for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 80)); }
-    // The loop can stop a step short of the end, which left the last row of
-    // cards grey in every screenshot. Go to the bottom explicitly.
-    window.scrollTo(0, document.body.scrollHeight);
-    await new Promise((r) => setTimeout(r, 200));
-    window.scrollTo(0, 0);
-  });
-  await pg.waitForFunction(() => [...document.images].every((i) => i.complete), null, { timeout: 30000 }).catch(() => {});
+/* Take a screenshot that actually shows the pictures.
+ *
+ * `fullPage: true` on its own does not. The pictures below the fold are lazy,
+ * so they were never asked for, and the shot is mostly grey boxes — which made
+ * the one artefact a person looks at to check their work the least trustworthy
+ * thing this suite produced.
+ *
+ * Three things were in the way, and each needed its own answer:
+ *
+ *   - the pictures are never fetched        -> clear `loading="lazy"`
+ *   - `complete` says they are there        -> wait on `naturalWidth` instead;
+ *     when they are not                        a lazy picture that has not been
+ *                                              asked for reports complete, so
+ *                                              waiting on it returns at once
+ *   - a picture outside the viewport has    -> make the viewport the whole page
+ *     its decoded form thrown away, and        before shooting, and decode()
+ *     repaints empty when the shot resizes     every picture while it is there
+ *     the viewport around it
+ *
+ * Scrolling instead of resizing was the first attempt. It half worked, hid a
+ * 20-second timeout behind every shot, and cost two and a half minutes a run.
+ */
+const shoot = async (pg, file) => {
+  const vp = pg.viewportSize();
+  await pg.evaluate(() => { for (const img of document.images) img.loading = 'eager'; });
+  // 16000px is about as tall as Chromium will render in one go; the gallery is
+  // taller than that, and its tail is the part that may still come out grey.
+  const tall = Math.min(await pg.evaluate(() => document.body.scrollHeight), 16000);
+  await pg.setViewportSize({ width: vp.width, height: tall });
+  const done = await pg.waitForFunction(() => [...document.images].every((i) => i.naturalWidth > 0), null, { timeout: 20000 })
+    .then(() => true, () => false);
+  await pg.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => {}))));
+  // A throwaway shot first. It forces a full paint of the resized page, which
+  // is what makes Chromium decode the last stragglers; the second shot is the
+  // one that has them all.
+  await pg.screenshot({ fullPage: true });
+  await pg.evaluate(() => Promise.all([...document.images].map((i) => i.decode().catch(() => {}))));
+  await pg.screenshot({ path: file, fullPage: true });
+  await pg.setViewportSize(vp);
+  if (!done) console.log('  note  ' + file + ': a picture never loaded, so the shot has a gap in it');
 };
 
 (async () => {
@@ -156,7 +181,7 @@ const settle = async (pg) => {
     } else {
       check('desktop shows the inline nav', await pg.isVisible('[data-testid=nav]'));
     }
-    await settle(pg); await pg.screenshot({ path: `shot-${label}-home.png`, fullPage: true });
+    await shoot(pg, `shot-${label}-home.png`);
 
     // a post, reached from its card
     await pg.click(`[data-testid=post-card] h2 a:has-text("${lead.title}")`);
@@ -176,7 +201,7 @@ const settle = async (pg) => {
     check('document title names the post', (await pg.title()).startsWith(lead.title));
     check('read more shows other posts', (await pg.$$('[data-testid=read-more] [data-testid=post-card]')).length === Math.min(3, posts.length - 1));
     check('older link present on the newest post', /Older/.test(await pg.textContent('[data-testid=post-nav]')));
-    await settle(pg); await pg.screenshot({ path: `shot-${label}-post.png`, fullPage: true });
+    await shoot(pg, `shot-${label}-post.png`);
 
     // a wordless picture post claims nothing it has not got
     const wordless = posts.find((p) => !p.body.trim());
@@ -228,7 +253,7 @@ const settle = async (pg) => {
     await pg.keyboard.press('Escape');
     await pg.waitForSelector('[data-testid=lightbox]', { state: 'detached' });
     check('lightbox closes on Escape', true);
-    await settle(pg); await pg.screenshot({ path: `shot-${label}-gallery.png`, fullPage: true });
+    await shoot(pg, `shot-${label}-gallery.png`);
 
     /* The studio on a build with no Google client id. It must still be
        reachable and must say why it cannot work, rather than offering a button
@@ -256,7 +281,7 @@ const settle = async (pg) => {
     await pg.reload({ waitUntil: 'networkidle' });
     await pg.waitForSelector('[data-testid=hero]');
     check('dark theme survives a reload', await pg.evaluate(() => document.documentElement.classList.contains('dark')));
-    await settle(pg); await pg.screenshot({ path: `shot-${label}-dark.png`, fullPage: true });
+    await shoot(pg, `shot-${label}-dark.png`);
     await pg.click('[data-testid=theme-toggle]');
     check('light theme restored', !(await pg.evaluate(() => document.documentElement.classList.contains('dark'))));
 
