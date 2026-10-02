@@ -3,9 +3,26 @@
  * and the practice topics keep their names from one build to the next — so they
  * are fetched network-first and only fall back to the cached copy when the
  * network is gone. Cache-first there would pin a visitor to whatever content
- * they saw on their first visit, for ever. */
-var CACHE = 'creating-v1';
+ * they saw on their first visit, for ever.
+ *
+ * The version is part of the cache's name and activate drops every other one,
+ * so raising it is how a visitor is let out of a cache that has gone bad.
+ */
+var CACHE = 'creating-v2';
 var PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg'];
+
+/* Only a real answer is worth keeping.
+ *
+ * This used to keep whatever came back, and that was a trap with no way out. A
+ * picture asked for in the moment before its file finished deploying answers
+ * 404; the 404 went in the cache; pictures are cache-first; the cache is only
+ * ever dropped when its name changes. So one unlucky request left a card grey
+ * on that visitor's screen for ever, and no later deploy could reach them. */
+function keep(req, res) {
+  if (!res || !res.ok || res.status !== 200 || res.type !== 'basic') return;
+  caches.open(CACHE).then(function (c) { c.put(req, res); });
+}
+
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(PRECACHE); }).then(function () { return self.skipWaiting(); }));
 });
@@ -20,13 +37,11 @@ self.addEventListener('fetch', function (e) {
   var networkFirst = req.mode === 'navigate' || /\/content\/.*\.json$|index\.html$/.test(req.url);
   if (networkFirst) {
     e.respondWith(fetch(req).then(function (res) {
-      var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); return res;
+      keep(req, res.clone()); return res;
     }).catch(function () { return caches.match(req).then(function (hit) { return hit || caches.match('index.html'); }); }));
     return;
   }
   e.respondWith(caches.match(req).then(function (hit) {
-    return hit || fetch(req).then(function (res) {
-      var copy = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, copy); }); return res;
-    });
+    return hit || fetch(req).then(function (res) { keep(req, res.clone()); return res; });
   }));
 });

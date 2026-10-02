@@ -391,6 +391,19 @@ const shoot = async (pg, file) => {
       await ctx.setOffline(true);
       check('and the last one seen is still there with no network', (await schema()) === 99);
       await ctx.setOffline(false);
+
+      /* A picture asked for in the moment before its file finished deploying
+         answers 404. Pictures are served cache-first and the cache is only
+         dropped when its name changes, so a 404 kept here would be served for
+         ever: the card stays grey on that visitor's screen and no later deploy
+         can reach them. This is what that looks like from the page. */
+      const late = path.join(DIST, 'images', 'late-arrival.txt');
+      try {
+        const status = () => pg.evaluate(() => fetch('images/late-arrival.txt').then((r) => r.status));
+        check('a file that has not deployed yet answers 404', (await status()) === 404);
+        fs.writeFileSync(late, 'here now');
+        check('and is picked up once it arrives, not served from a cached 404', (await status()) === 200);
+      } finally { if (fs.existsSync(late)) fs.unlinkSync(late); }
     } finally { fs.writeFileSync(bundle, original); }
     await ctx.close();
   }
