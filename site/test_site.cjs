@@ -33,6 +33,23 @@ function check(name, ok, extra) { console.log((ok ? '  ok   ' : '  FAIL ') + nam
    error cannot hide behind a blanket exemption. */
 const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => errs.push('PAGEERR ' + e.message)); pg.on('console', (m) => { if (m.type() === 'error' && !/favicon|sw\.js|net::ERR_FAILED/.test(m.text()) && !(allow && allow.test(m.text()))) errs.push('CONSOLE ' + m.text()); }); return errs; };
 
+/* A full-page screenshot of a page with lazy pictures shows grey boxes: the
+   pictures below the fold were never in view, so the browser never asked for
+   them. That makes the one artefact a person actually looks at the least
+   trustworthy thing the suite produces. So scroll the page first and wait for
+   every picture to finish, then shoot. */
+const settle = async (pg) => {
+  await pg.evaluate(async () => {
+    for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 80)); }
+    // The loop can stop a step short of the end, which left the last row of
+    // cards grey in every screenshot. Go to the bottom explicitly.
+    window.scrollTo(0, document.body.scrollHeight);
+    await new Promise((r) => setTimeout(r, 200));
+    window.scrollTo(0, 0);
+  });
+  await pg.waitForFunction(() => [...document.images].every((i) => i.complete), null, { timeout: 30000 }).catch(() => {});
+};
+
 (async () => {
   const { srv, base } = await serve(8160);
   const origin = new URL(base).origin;
@@ -61,6 +78,33 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
   check('google-site-verification tag ' + (token ? 'carries the token' : 'is left out until a token is set'),
     token ? head.includes(`<meta name="google-site-verification" content="${token}">`) : !head.includes('google-site-verification'));
 
+  /* ---- what the front page weighs ---- */
+  console.log('\n== pictures ==');
+  {
+    /* These posts are photographs off a phone: 2000px wide, half a megabyte
+       each. That is right on the post page and wrong on a card drawn at 400px,
+       and the front page showing two dozen of them was 9 MB to draw. So
+       make_thumbs.py writes smaller copies and the bundle records them. This is
+       the check that they are actually being used: it reads the built files, so
+       it fails whether the copies went missing or a screen stopped asking for
+       them. */
+    const weigh = (rel) => { try { return fs.statSync(path.join(DIST, rel)).size } catch { return 0 } };
+    const front = BUNDLE.posts.slice(0, 25).filter((p) => p.image && !/^https?:/.test(p.image));
+    const asServed = front.reduce((n, p) => n + (weigh(p.thumb) || weigh(p.image)), 0);
+    const originals = front.reduce((n, p) => n + weigh(p.image), 0);
+    const BUDGET = 4 * 1024 * 1024;
+    check(`the front page's ${front.length} pictures weigh under 4 MB`, asServed > 0 && asServed < BUDGET,
+      `${(asServed / 1048576).toFixed(2)} MB, from ${(originals / 1048576).toFixed(1)} MB of originals`);
+    const missing = front.filter((p) => !p.thumb);
+    check('every committed picture has a small copy', missing.length === 0,
+      missing.length ? missing.map((p) => p.slug).join(', ') + ' — run site/make_thumbs.py' : `${front.length} of them`);
+    // The post page shows one picture, so it can afford a bigger one — but not
+    // the 7 MB PNG some of these are. Anything heavy must have a `large`.
+    const heavy = BUNDLE.posts.filter((p) => p.image && !/^https?:/.test(p.image) && weigh(p.image) >= 800 * 1024);
+    check(`the ${heavy.length} heaviest pictures have a post-page copy`, heavy.every((p) => p.large),
+      heavy.filter((p) => !p.large).map((p) => p.slug).join(', ') || 'all of them');
+  }
+
   for (const [label, viewport] of [['desktop', { width: 1280, height: 860 }], ['phone', { width: 390, height: 844 }]]) {
     console.log('\n== ' + label + ' ==');
     const phone = label === 'phone';
@@ -83,6 +127,13 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     let cards = await pg.$$('[data-testid=post-card]');
     check(`front page opens on ${firstPage} of ${posts.length} posts`, cards.length === firstPage, String(cards.length));
     check('newest post leads', (await cards[0].textContent()).includes(lead.title));
+    /* Not "a thumb path appears in the markup" but "every card asked for one".
+       A card that slipped back to the original would still look right, which is
+       exactly why this is checked rather than looked at. */
+    const cardSrcs = await pg.$$eval('[data-testid=post-card] img', (els) => els.map((e) => e.getAttribute('src')));
+    const fullSized = cardSrcs.filter((u) => u && !u.includes('images/thumbs/') && !/^https?:/.test(u));
+    check('every card asks for the small copy', cardSrcs.length > 0 && fullSized.length === 0,
+      fullSized.slice(0, 3).join(' | ') || `${cardSrcs.length} cards`);
     if (posts.length > firstPage) {
       await pg.click('[data-testid=show-more]');
       cards = await pg.$$('[data-testid=post-card]');
@@ -105,7 +156,7 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     } else {
       check('desktop shows the inline nav', await pg.isVisible('[data-testid=nav]'));
     }
-    await pg.screenshot({ path: `shot-${label}-home.png`, fullPage: true });
+    await settle(pg); await pg.screenshot({ path: `shot-${label}-home.png`, fullPage: true });
 
     // a post, reached from its card
     await pg.click(`[data-testid=post-card] h2 a:has-text("${lead.title}")`);
@@ -113,6 +164,10 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     const hash = await pg.evaluate(() => location.hash);
     check('card opens the post route', hash === '#/post/' + lead.slug, hash);
     check('post title rendered', (await pg.textContent('[data-testid=post-title]')) === lead.title);
+    if (lead.large) {
+      const src = await pg.getAttribute('[data-testid=post-image]', 'src');
+      check('the post page takes the lighter copy of a heavy picture', src === lead.large, src);
+    }
     check('the post shows its picture', (await pg.$('[data-testid=post-image]')) !== null);
     const hasProse = (await pg.$('[data-testid=prose]')) !== null;
     check(lead.body.trim() ? 'body rendered' : 'no empty reading column on a picture post', hasProse === Boolean(lead.body.trim()));
@@ -121,7 +176,7 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     check('document title names the post', (await pg.title()).startsWith(lead.title));
     check('read more shows other posts', (await pg.$$('[data-testid=read-more] [data-testid=post-card]')).length === Math.min(3, posts.length - 1));
     check('older link present on the newest post', /Older/.test(await pg.textContent('[data-testid=post-nav]')));
-    await pg.screenshot({ path: `shot-${label}-post.png`, fullPage: true });
+    await settle(pg); await pg.screenshot({ path: `shot-${label}-post.png`, fullPage: true });
 
     // a wordless picture post claims nothing it has not got
     const wordless = posts.find((p) => !p.body.trim());
@@ -173,7 +228,7 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     await pg.keyboard.press('Escape');
     await pg.waitForSelector('[data-testid=lightbox]', { state: 'detached' });
     check('lightbox closes on Escape', true);
-    await pg.screenshot({ path: `shot-${label}-gallery.png`, fullPage: true });
+    await settle(pg); await pg.screenshot({ path: `shot-${label}-gallery.png`, fullPage: true });
 
     /* The studio on a build with no Google client id. It must still be
        reachable and must say why it cannot work, rather than offering a button
@@ -201,7 +256,7 @@ const errorsOf = (pg, allow) => { const errs = []; pg.on('pageerror', (e) => err
     await pg.reload({ waitUntil: 'networkidle' });
     await pg.waitForSelector('[data-testid=hero]');
     check('dark theme survives a reload', await pg.evaluate(() => document.documentElement.classList.contains('dark')));
-    await pg.screenshot({ path: `shot-${label}-dark.png`, fullPage: true });
+    await settle(pg); await pg.screenshot({ path: `shot-${label}-dark.png`, fullPage: true });
     await pg.click('[data-testid=theme-toggle]');
     check('light theme restored', !(await pg.evaluate(() => document.documentElement.classList.contains('dark'))));
 

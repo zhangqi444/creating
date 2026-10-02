@@ -53,6 +53,11 @@ function readPost(p) {
     tags: p.tags || [],
     excerpt: p.excerpt || excerptOf(p.body),
     image: p.imageId ? Drive.imageUrl(p.imageId) : p.image || "",
+    // The smaller copies. A Drive picture gets them by asking Google for a
+    // width; a committed one gets the paths make_thumbs.py wrote into the
+    // bundle. Either way they may be absent, and @/lib/picture falls back.
+    thumb: p.imageId ? Drive.imageUrl(p.imageId, 800) : p.thumb || "",
+    large: p.imageId ? Drive.imageUrl(p.imageId, 1600) : p.large || "",
     imageAlt: p.imageAlt || "",
     caption: p.caption || "",
     featured: false,
@@ -90,7 +95,7 @@ function apply(source, data, blogId = "") {
   C.pages = (bundle && bundle.pages) || []
   C.gallery = posts
     .filter((p) => p.image)
-    .map((p) => ({ src: p.image, alt: p.imageAlt || p.title, caption: untitled(p.title) ? "" : p.title, date: p.date, slug: p.slug }))
+    .map((p) => ({ src: p.image, thumb: p.thumb, alt: p.imageAlt || p.title, caption: untitled(p.title) ? "" : p.title, date: p.date, slug: p.slug }))
   C.source = source
   C.blogId = blogId
   emit()

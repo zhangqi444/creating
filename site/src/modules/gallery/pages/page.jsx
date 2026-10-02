@@ -1,5 +1,6 @@
 /* A standing page such as About: title, optional picture, the body. */
 import { pageBySlug } from "@/modules/gallery/content"
+import { full } from "@/lib/picture"
 import { fmtDate } from "@/lib/format"
 import { Markdown } from "@/components/markdown"
 import { useTitle } from "@/components/page-title"
@@ -17,7 +18,7 @@ export function Page({ slug }) {
       </header>
       {page.image && (
         <figure className="mx-auto mt-10 max-w-5xl">
-          <img src={page.image} alt={page.imageAlt || ""} className="aspect-[21/9] w-full rounded-xl object-cover" />
+          <img src={full(page)} alt={page.imageAlt || ""} className="aspect-[21/9] w-full rounded-xl object-cover" />
         </figure>
       )}
       <div className="mx-auto mt-10 max-w-3xl">

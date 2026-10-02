@@ -79,7 +79,12 @@ There are two ways, and they do not have to agree.
    Optional keys: `featured: true`, `updated: YYYY-MM-DD`, `draft: true` (kept out
    of the site), `slug:` (defaults to the file name).
 2. Put pictures in `site/public/images/` and refer to them as `images/name.ext`.
-3. Run `python3 site/make_bundle.py` and commit the regenerated
+3. Run `python3 site/make_thumbs.py` (it needs Pillow) to write the smaller
+   copies the cards and the gallery use. The original is left exactly as it is;
+   the copies go in `images/thumbs/` and `images/large/` beside it, and are
+   committed with it. Skipping this costs nothing but weight — every screen
+   falls back to the original.
+4. Run `python3 site/make_bundle.py` and commit the regenerated
    `site/public/content/bundle.json` together with the post.
 
 Standing pages (About, Privacy, Terms, …) are `content/pages/<slug>.md` with
@@ -218,6 +223,7 @@ given address reads this blog.
     npm run dev       # http://localhost:5173
     npm run build     # → site/dist
     npm test          # both Playwright suites, against dist/ (needs Chromium)
+    python3 site/make_thumbs.py   # smaller copies of any new picture (needs Pillow)
     python3 site/make_bundle.py   # after editing content/**; commit the bundle
 
 ## Publishing on GitHub Pages

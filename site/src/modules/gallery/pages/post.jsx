@@ -4,6 +4,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react"
 
 import { neighbours, postBySlug, related } from "@/modules/gallery/content"
 import { fmtDate, titleOf } from "@/lib/format"
+import { full } from "@/lib/picture"
 import { href } from "@/lib/router"
 import { Markdown } from "@/components/markdown"
 import { PostCard, PostMeta } from "@/modules/gallery/post-card"
@@ -21,7 +22,7 @@ export function Post({ slug }) {
     <article data-testid="post" className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       {post.image && (
         <figure className="mx-auto max-w-4xl">
-          <img src={post.image} alt={post.imageAlt || titleOf(post)} data-testid="post-image"
+          <img src={full(post)} alt={post.imageAlt || titleOf(post)} data-testid="post-image"
             className="max-h-[82vh] w-full rounded-xl object-contain" />
           {post.caption && (
             <figcaption className="mt-3 text-center text-sm text-muted-foreground">{post.caption}</figcaption>

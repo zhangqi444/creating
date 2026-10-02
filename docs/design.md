@@ -33,6 +33,11 @@ pictures in one grid is a page nobody can use.
    chosen for contrast.
 5. **Nothing to load.** The device's own font, inline SVG icons, one JSON fetch,
    and not a single request to another host. The suite fails if that changes.
+6. **A picture is sent at the size it is drawn.** These are photographs off a
+   phone, 2000px wide; a card shows one at 400. So cards and gallery tiles ask
+   for the 800px copy and the post page for the 1600px one, and the front page
+   costs 2.6 MB instead of 9.3. The original is still there, untouched, for the
+   one screen that shows the picture large.
 
 ## Theme
 

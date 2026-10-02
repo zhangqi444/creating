@@ -4,6 +4,7 @@ import { useState } from "react"
 
 import { C } from "@/modules/gallery/content"
 import { fmtDate } from "@/lib/format"
+import { full, small } from "@/lib/picture"
 import { href } from "@/lib/router"
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { useTitle } from "@/components/page-title"
@@ -28,7 +29,7 @@ export function Gallery() {
             <li key={g.src}>
               <button type="button" data-testid="gallery-item" onClick={() => setOpen(g)}
                 className="group block w-full overflow-hidden rounded-xl border bg-card text-left shadow-xs transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 cursor-pointer">
-                <img src={g.src} alt={g.alt} loading="lazy" decoding="async" className="w-full transition-transform duration-300 group-hover:scale-[1.02]" />
+                <img src={small(g)} alt={g.alt} loading="lazy" decoding="async" className="w-full transition-transform duration-300 group-hover:scale-[1.02]" />
                 {(g.caption || g.date) && (
                   <span className="flex items-baseline justify-between gap-2 px-3 py-2 text-sm">
                     <span className="font-medium">{g.caption}</span>
@@ -44,7 +45,7 @@ export function Gallery() {
         <DialogContent className="max-w-[calc(100%-2rem)] gap-3 p-3 sm:max-w-4xl" data-testid="lightbox">
           {open && (
             <>
-              <img src={open.src} alt={open.alt} className="max-h-[75vh] w-full rounded-lg object-contain" />
+              <img src={full(open)} alt={open.alt} className="max-h-[75vh] w-full rounded-lg object-contain" />
               <DialogTitle className="px-1 text-base">{open.caption || open.alt}</DialogTitle>
               <DialogDescription className="flex items-center justify-between gap-3 px-1">
                 <span>{open.date ? fmtDate(open.date) : open.alt}</span>

@@ -67,6 +67,8 @@ content/
 site/
   google.json              the Google client id and browser API key for local dev (public values; empty in the repo — the deployed site takes them from the OAUTH_CLIENT_ID and GOOGLE_API_KEY repository variables instead)
   make_bundle.py           content/** → site/public/content/bundle.json (the committed content)
+  make_thumbs.py           smaller copies of every picture, for cards and the post page (local tool; needs Pillow)
+  fetch_images.py          brings a post's remote picture into the repository (local tool)
   index.html               Vite entry
   vite.config.js           base './', the manifest, the service worker and the address
   src/main.jsx             boot: theme, stores, fetch the bundle, render
@@ -146,6 +148,19 @@ picture in one, and cannot read it again once it is withdrawn.
   `images/<file>`, or an absolute URL. `make_bundle.py` checks that a
   repo-relative picture exists but leaves an absolute URL alone. Relative paths
   work under the hash router because the document URL never changes.
+- **A picture exists at up to three sizes.** The original the author uploaded,
+  plus the smaller copies `site/make_thumbs.py` writes beside it:
+  `images/thumbs/<name>.jpg` at 800px for cards and gallery tiles, and
+  `images/large/<name>.jpg` at 1600px for the post page, made only for an
+  original over 800 kB. `make_bundle.py` records them as `thumb` and `large`,
+  and `@/lib/picture` picks one — `small()` for anywhere a picture is drawn a
+  few hundred pixels wide, `full()` for the post page and the lightbox. Both
+  fall back to the original, so a clone that never ran the tool serves the same
+  site, only heavier. A picture in someone's Drive gets the same two sizes by
+  asking Google for a width. **The originals are never replaced or recompressed
+  in place.** Re-run `make_thumbs.py` after adding a picture, and commit the
+  copies with it; the reading suite fails if a card goes back to asking for an
+  original.
 - `make_bundle.py` must be re-run and `site/public/content/bundle.json`
   committed whenever `content/**` changes — CI fails the build if the committed
   bundle has drifted.
@@ -176,7 +191,8 @@ Three rules follow from that, and they are not negotiable:
   about her, and it is not to be extended with made-up biography.
 
 The pictures are in `site/public/images/`, 135 files and about 77 MB, downloaded
-from the old blog's CDN by `site/fetch_images.py`. They are not served from
+from the old blog's CDN by `site/fetch_images.py`, with their smaller copies in
+`images/thumbs/` and `images/large/` beside them. They are not served from
 anywhere else and must not go back to being: the reading suite fails if the page
 fetches anything from another host, which is the check that keeps this true.
 
@@ -192,6 +208,7 @@ npm run dev        # local dev server
 npm run build      # → site/dist   (the Pages build)
 npm test           # both Playwright suites, against the built dist/
 python3 site/make_bundle.py    # rebuild bundle.json after editing content/**
+python3 site/make_thumbs.py    # smaller copies of any new picture (needs Pillow); then make_bundle.py again
 ```
 
 The generated bundle is committed, and CI fails the build if it has drifted from

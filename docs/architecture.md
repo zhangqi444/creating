@@ -10,6 +10,30 @@ A static React site with no backend: a blog anyone can read, and a studio where
 its author keeps the posts in a folder of their own Google Drive and publishes
 them by sharing one file.
 
+## One blog, not many
+
+This deployment is one author's blog. `blogId` in `content/site.json` names the
+published Drive file the front door shows, and when it is empty — as it is here
+— the front door shows the posts committed to the repository. That is the whole
+of the tenancy model, and it is a decision rather than an omission.
+
+The question it settles: the sibling sites `learning` and `giving` are
+multi-tenant, because every reader of those is signed in, so the session says
+whose data to show and two people at the same address each see their own. A blog
+is read by people who are not signed in and never will be, so nothing in a
+request says whose blog it is. Something in the *URL* has to, which leaves a
+shared namespace — a registry mapping a handle to a Drive file — and a registry
+is state no single author's Drive can hold. Giving this site a second author
+therefore means giving it a database and an owner for it, and that was not
+wanted.
+
+So: a second author can still sign in at `#/studio`, keep their posts in their
+own Drive and publish them, and `#/b/<driveFileId>` is a working, shareable
+address for the result. What they do not get is the front door. If that is ever
+to change, it is the registry above that has to be built, not something in this
+code — and the three content sources in `content.js` are already the seam it
+would attach to.
+
 ## Two chromes
 
 `App.jsx` decides between them and nothing else in the app has to know.
@@ -93,6 +117,7 @@ loads for another.
 | Store | `lib/module-store.js` | The contract a module instantiates: localStorage synchronously, its own Drive file on a 1.2 s debounce with a single 401 retry, per-record merge by `at`, tombstones in `deleted`, and a flush on `pagehide`. |
 | Model | `modules/gallery/model.js` | What a valid blog dataset is, and how any JSON is coerced into one: slugs made unique, dates checked, posts sorted, tombstones honoured. `mergeData` is last-write-wins per record, with a tombstone newer than a record beating it on both sides. |
 | Blog | `modules/gallery/store.js` | What a blog can do on top of what every module can: add, edit and delete a post, upload and attach a picture, publish and unpublish. |
+| Pictures | `site/make_thumbs.py`, `lib/picture.js` | Every picture exists at up to three sizes: the original, an 800px `thumb` and, for anything over 800 kB, a 1600px `large`. The tool writes the copies beside the original and never touches it; the bundle records their paths; `small()` and `full()` choose one and fall back to the original when there is none. A Drive picture gets the same two sizes from a width parameter. |
 | Markdown | `lib/markdown.js` | marked, GFM, with a renderer that gives headings ids, wraps images in figures, wraps tables so they scroll inside the column, and opens external links in a new tab. Trusted content, no sanitiser. |
 | Router | `lib/router.js`, `App.jsx` | Hash routes, each optionally under `#/b/<driveFileId>` so a published blog's links keep their blog. Any other route is the 404 view. Navigation scrolls to the top. |
 | Theme | `lib/theme.js` | Saved choice (`localStorage["creating.theme"]`) > host `data-theme` > OS; sets the `.dark` class and the `theme-color` meta. |

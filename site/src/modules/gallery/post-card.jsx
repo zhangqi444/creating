@@ -4,6 +4,7 @@
    which gets a wider crop and the author's byline. */
 import { C } from "@/modules/gallery/content"
 import { fmtDate, initials, isUntitled, readTime, titleOf } from "@/lib/format"
+import { small } from "@/lib/picture"
 import { href } from "@/lib/router"
 import { cn } from "@/lib/utils"
 
@@ -50,7 +51,7 @@ export function PostCard({ post, large = false }) {
       {post.image && (
         <a href={to} tabIndex={-1} aria-hidden="true"
           className="block overflow-hidden rounded-xl border bg-muted shadow-xs transition-shadow group-hover:shadow-md">
-          <img src={post.image} alt={post.imageAlt || titleOf(post)} loading={large ? "eager" : "lazy"} decoding="async"
+          <img src={small(post)} alt={post.imageAlt || titleOf(post)} loading={large ? "eager" : "lazy"} decoding="async"
             className={cn("w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]",
               large ? "aspect-[3/2]" : "aspect-[4/3]")} />
         </a>

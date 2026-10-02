@@ -62,6 +62,28 @@ def excerpt(md, limit=160):
             return p if len(p) <= limit else p[:limit].rsplit(" ", 1)[0] + "…"
     return ""
 
+PUBLIC = ROOT / "site" / "public"
+
+def derived(src):
+    """The smaller copies site/make_thumbs.py made of this picture, if any.
+
+    A post's picture is a photograph off a phone, right for the post page and far
+    too big for a card. make_thumbs.py writes smaller copies beside it and this
+    records where they are, so a card can ask for the small one. Nothing is
+    required: a picture with no copies, or one on another host, gets empty
+    strings and every page falls back to the original. That keeps the tool
+    optional — a fresh clone with no Pillow still builds the same site, only
+    heavier.
+    """
+    if not src or src.startswith(("http://", "https://")):
+        return "", ""
+    out = []
+    for kind in ("thumbs", "large"):
+        rel = f"images/{kind}/{Path(src).stem}.jpg"
+        out.append(rel if (PUBLIC / rel).exists() else "")
+    return tuple(out)
+
+
 def read_post(path):
     meta, body = front_matter(path.read_text(encoding="utf-8"), path.name)
     m = re.match(r"^(\d{4}-\d{2}-\d{2})-(.+)\.md$", path.name)
@@ -87,6 +109,8 @@ def read_post(path):
         "tags": [str(t).strip().lower() for t in tags if str(t).strip()],
         "excerpt": meta.get("excerpt") or excerpt(body),
         "image": meta.get("image", ""),
+        "thumb": derived(meta.get("image", ""))[0],
+        "large": derived(meta.get("image", ""))[1],
         "imageAlt": meta.get("imageAlt", ""),
         "caption": meta.get("caption", ""),
         "featured": bool(meta.get("featured", False)),
@@ -111,6 +135,8 @@ def read_page(path):
         "title": meta["title"],
         "updated": str(meta.get("updated", "")),
         "image": meta.get("image", ""),
+        "thumb": derived(meta.get("image", ""))[0],
+        "large": derived(meta.get("image", ""))[1],
         "imageAlt": meta.get("imageAlt", ""),
         "body": body,
     }
@@ -147,7 +173,7 @@ def main():
     else:
         untitled = lambda t: re.fullmatch(r"\(?\s*untitled\s*\)?", (t or "").strip(), re.I) is not None
         gallery = [
-            {"src": p["image"], "alt": p["imageAlt"] or p["title"],
+            {"src": p["image"], "thumb": p["thumb"], "alt": p["imageAlt"] or p["title"],
              "caption": "" if untitled(p["title"]) else p["title"],
              "date": p["date"], "slug": p["slug"]}
             for p in posts if p["image"]
@@ -156,6 +182,9 @@ def main():
         if not g.get("src") or not g.get("alt"):
             sys.exit("gallery.json: every item needs src and alt")
         g.setdefault("caption", ""); g.setdefault("date", "")
+        # A hand-written gallery.json names only `src`; find its small copy here
+        # so one list cannot end up heavier than the other.
+        g.setdefault("thumb", derived(g["src"])[0])
     gallery.sort(key=lambda g: (g["date"], g["src"]), reverse=True)
     # A picture is either a file in site/public/ or an absolute URL on the host
     # that still serves it; a repo-relative path that is not there is a mistake

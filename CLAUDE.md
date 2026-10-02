@@ -22,7 +22,7 @@ this project follows isee.
 
 ```bash
 cd site && npm run build && npm test
-python3 site/make_bundle.py
+python3 site/make_thumbs.py && python3 site/make_bundle.py
 git diff --exit-code -- site/public/content/
 ```
 
@@ -61,7 +61,10 @@ Claude-Session: <session url>
   repository root and serves `README.md`. The fix is Settings → Pages → Source →
   **GitHub Actions**, nothing in the code.
 - Pictures must be in `site/public/images/`; `make_bundle.py` refuses a post
-  whose `image` is not there.
+  whose `image` is not there. A new picture also needs `python3
+  site/make_thumbs.py` before the bundle, or the cards will serve a 2000px
+  photograph at 400px and the reading suite will say so. The originals are never
+  replaced in place — the tool only writes copies beside them.
 - The deployed site usually cannot be opened from the remote sandbox — GitHub's
   and Cloudflare's hosts answer 403 at the proxy's CONNECT — so a change is
   verified by the suites and the workflow's conclusion, never by loading the live
