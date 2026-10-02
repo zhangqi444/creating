@@ -38,9 +38,10 @@ export function SiteHeader({ route }) {
     <header className="sticky top-0 z-40 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:px-6">
         <a href={href("/")} data-testid="brand" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="grid size-7 place-items-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
-            {C.site.title.trim()[0]}
-          </span>
+          {/* The same file the browser tab shows, rather than a second drawing of
+              the mark that would drift from it — and rather than the site's
+              initial, which tied the brand to a name that may yet change. */}
+          <img src="favicon.svg" alt="" width="28" height="28" className="size-7 shrink-0" />
           <span>{C.site.title}</span>
         </a>
         <nav className="ml-4 hidden items-center gap-1 sm:flex" data-testid="nav">{links}</nav>

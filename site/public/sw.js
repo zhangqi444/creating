@@ -8,7 +8,12 @@
  * The version is part of the cache's name and activate drops every other one,
  * so raising it is how a visitor is let out of a cache that has gone bad.
  */
-var CACHE = 'creating-v2';
+/* The build writes the stamp: a digest of the precached files, so the cache's
+   name changes exactly when something in it changes and activate drops the old
+   one. It was a hand-raised 'v2', and a hand-raised number is a promise to
+   remember — change the icon, forget the number, and every returning visitor
+   keeps the old icon out of a cache nothing will ever evict. */
+var CACHE = 'creating-__BUILD__';
 var PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg'];
 
 /* Only a real answer is worth keeping.

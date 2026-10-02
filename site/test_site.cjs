@@ -386,6 +386,18 @@ const shoot = async (pg, file) => {
          wrong never gets the one that fixes it. */
       const sw = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').match(/register\("(sw\.js[^"]*)"\)/);
       check('the worker is registered under a versioned url', Boolean(sw && /\?v=[0-9a-f]{8}$/.test(sw[1])), sw ? sw[1] : 'no registration found');
+      /* The cache's name has to be a digest of what it holds. Everything the
+         worker precaches keeps its file name between builds, and the cache is
+         dropped only when its name changes — so with a hand-raised version,
+         changing the icon and forgetting to raise it leaves every returning
+         visitor on the old one, out of a cache nothing will ever evict. */
+      const cacheName = (fs.readFileSync(path.join(DIST, 'sw.js'), 'utf8').match(/CACHE = '([^']+)'/) || [])[1];
+      const stamp = require('crypto').createHash('sha256')
+        .update(Buffer.concat(['manifest.webmanifest', 'favicon.svg'].map((f) => fs.readFileSync(path.join(DIST, f)))))
+        .digest('hex').slice(0, 8);
+      check('the cache is named after what it holds, not a number someone raises by hand',
+        cacheName === 'creating-' + stamp, cacheName + ' vs creating-' + stamp);
+
       const digest = require('crypto').createHash('sha256').update(fs.readFileSync(path.join(DIST, 'sw.js'))).digest('hex').slice(0, 8);
       check('and that version is the worker\'s own digest, so it moves when the worker does',
         Boolean(sw) && sw[1].endsWith('?v=' + digest), sw ? sw[1] + ' vs ' + digest : '');

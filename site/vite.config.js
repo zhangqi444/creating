@@ -7,11 +7,27 @@ import path from 'node:path'
 
 const ROOT = path.dirname(new URL(import.meta.url).pathname)
 
-/* A short digest of the service worker's own source, so its registered URL
+/* The service worker, with its cache name stamped in.
+ *
+ * Everything the worker precaches keeps its name from one build to the next —
+ * unlike the app's files, which are content-hashed — so nothing about a new
+ * favicon tells a browser already holding the old one to let go. The cache is
+ * dropped only when its name changes, so the name is a digest of what is in it.
+ * Change the icon and the name moves on its own; change nothing and it stays,
+ * so a visitor is not made to re-install a worker for no reason. */
+const PRECACHED = ['manifest.webmanifest', 'favicon.svg']
+
+function swSource() {
+  const src = fs.readFileSync(path.join(ROOT, 'public', 'sw.js'), 'utf8')
+  const files = PRECACHED.map((f) => fs.readFileSync(path.join(ROOT, 'public', f)))
+  const stamp = crypto.createHash('sha256').update(Buffer.concat(files)).digest('hex').slice(0, 8)
+  return src.replace('__BUILD__', stamp)
+}
+
+/* A short digest of the worker as it will be deployed, so its registered URL
    changes exactly when its behaviour does and not on every unrelated build. */
 function swVersion() {
-  const src = fs.readFileSync(path.join(ROOT, 'public', 'sw.js'))
-  return crypto.createHash('sha256').update(src).digest('hex').slice(0, 8)
+  return crypto.createHash('sha256').update(swSource()).digest('hex').slice(0, 8)
 }
 const SITE = JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'content', 'site.json'), 'utf8'))
 
@@ -41,6 +57,11 @@ const GOOGLE = (() => {
 function appTarget() {
   return {
     name: 'app-target',
+    // publicDir copies the worker verbatim, so the stamped one is written over
+    // it once the build has finished putting everything in place.
+    closeBundle() {
+      fs.writeFileSync(path.join(ROOT, 'dist', 'sw.js'), swSource())
+    },
     transformIndexHtml() {
       // Nothing is written when there is no client id, so the page simply has
       // no sign-in — and a test can supply its own config before the app loads

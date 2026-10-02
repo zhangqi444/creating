@@ -52,6 +52,7 @@ variables in `site/src/index.css`, mapped into Tailwind v4 with `@theme inline`.
 | `foreground` | `#171c24` | `#e7ebf1` | text |
 | `muted-foreground` | `#5d6673` | `#9aa5b4` | excerpts, bylines, captions |
 | `primary` | `#2b63c9` | `#8fb4f0` | links, topic labels, the avatar, the one button |
+| the mark | `#2b63c9` → `#6b4fc4` | same | the site mark, in `site/public/favicon.svg` |
 | `accent` | `#dde7f7` | `#1b2a42` | hover surfaces |
 | `border` | `#d9dfe8` | `#2a323d` | hairlines |
 | `hero-from` / `hero-to` | `#dbe8ff` → `#f5f7fa` | `#16233a` → `#0f1318` | the front page band |
@@ -66,8 +67,7 @@ muted; topic labels `text-xs` uppercase, letter-spaced, blue.
 
 ## Layout
 
-- **Header**: sticky, translucent, 3.5rem. Brand (a blue circle with the site's
-  first letter, then the name), the nav from `site.json`, a pencil to the studio
+- **Header**: sticky, translucent, 3.5rem. Brand (the site mark, then the name), the nav from `site.json`, a pencil to the studio
   when sign-in is configured, the theme toggle. Under 640px the nav folds into a
   menu button that opens a list below the bar and closes on navigation.
 - **Front page**: a soft blue-to-background gradient band with the name and
