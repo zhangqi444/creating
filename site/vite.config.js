@@ -1,10 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
 const ROOT = path.dirname(new URL(import.meta.url).pathname)
+
+/* A short digest of the service worker's own source, so its registered URL
+   changes exactly when its behaviour does and not on every unrelated build. */
+function swVersion() {
+  const src = fs.readFileSync(path.join(ROOT, 'public', 'sw.js'))
+  return crypto.createHash('sha256').update(src).digest('hex').slice(0, 8)
+}
 const SITE = JSON.parse(fs.readFileSync(path.join(ROOT, '..', 'content', 'site.json'), 'utf8'))
 
 /* The Google client id and browser API key. Both are public values meant to
@@ -53,8 +61,15 @@ function appTarget() {
         ...google,
         { tag: 'link', attrs: { rel: 'manifest', href: 'manifest.webmanifest' }, injectTo: 'head' },
         {
+          /* The worker is registered under a URL that changes when the worker
+             does. Registering a fixed "sw.js" looks right and is not: the
+             browser may answer its own update check from its HTTP cache for up
+             to a day, so a visitor whose worker has gone wrong keeps the broken
+             one — and a fix to the worker cannot reach the people who need it
+             most, which is precisely what happened once. A URL the browser has
+             never seen has nothing to answer from. */
           tag: 'script',
-          children: 'if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js")});',
+          children: 'if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=' + swVersion() + '")});',
           injectTo: 'body',
         },
       ]

@@ -380,6 +380,16 @@ const shoot = async (pg, file) => {
       check('the service worker is in charge of the page',
         await pg.evaluate(() => Boolean(navigator.serviceWorker.controller)));
 
+      /* The worker must be registered under a URL that moves with it. With a
+         fixed "sw.js" the browser may answer its own update check from the HTTP
+         cache for up to a day, so a visitor holding a worker that has gone
+         wrong never gets the one that fixes it. */
+      const sw = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').match(/register\("(sw\.js[^"]*)"\)/);
+      check('the worker is registered under a versioned url', Boolean(sw && /\?v=[0-9a-f]{8}$/.test(sw[1])), sw ? sw[1] : 'no registration found');
+      const digest = require('crypto').createHash('sha256').update(fs.readFileSync(path.join(DIST, 'sw.js'))).digest('hex').slice(0, 8);
+      check('and that version is the worker\'s own digest, so it moves when the worker does',
+        Boolean(sw) && sw[1].endsWith('?v=' + digest), sw ? sw[1] + ' vs ' + digest : '');
+
       const schema = () => pg.evaluate(() => fetch('content/bundle.json').then((r) => r.json()).then((j) => j.schema));
       check('content is served through it', (await schema()) === 1);
 
