@@ -36,8 +36,9 @@ ROOT = Path(__file__).resolve().parent.parent
 BUNDLE = ROOT / "site" / "public" / "content" / "bundle.json"
 OUT = ROOT / "site" / "broadcast"
 
-# Straight off content/site.json's own tokens, so the mail and the site agree.
-INK, MUTED, BLUE, LINE, PAPER = "#171c24", "#5d6673", "#2b63c9", "#d9dfe8", "#f5f7fa"
+# The site's own tokens, which are sheilazhang.org's, so the mail matches both.
+# BLUE is the button fill (the hub's exact pink); LINK is the readable text pink.
+INK, MUTED, BLUE, LINK, LINE, PAPER = "#15171a", "#6b6b6b", "#ff1a75", "#d6005b", "#e6e6e6", "#ffffff"
 FONT = "Helvetica, Arial, sans-serif"
 
 
@@ -94,7 +95,7 @@ def build(site, posts, base):
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
       style="width:100%;max-width:600px;">
       <tr><td style="padding-bottom:4px;font-family:{FONT};font-size:14px;line-height:1.4;color:{MUTED};">
-        <a href="{esc(base)}" style="color:{BLUE};text-decoration:none;font-weight:bold;">{title}</a>
+        <a href="{esc(base)}" style="color:{LINK};text-decoration:none;font-weight:bold;">{title}</a>
       </td></tr>
       <tr><td style="padding-top:0;padding-bottom:0;font-family:{FONT};font-size:16px;line-height:1.5;color:{INK};">
         {"Something new." if len(posts) == 1 else f"{len(posts)} new pictures."}
@@ -102,8 +103,8 @@ def build(site, posts, base):
       {rows}
       <tr><td style="padding-top:34px;padding-bottom:0;">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-          <tr><td bgcolor="{BLUE}" style="background-color:{BLUE};border-radius:8px;">
-            <a href="{esc(base)}" style="display:inline-block;padding-top:11px;padding-bottom:11px;padding-left:22px;padding-right:22px;font-family:{FONT};font-size:15px;line-height:1.2;color:#ffffff;text-decoration:none;font-weight:bold;">See them all</a>
+          <tr><td bgcolor="{BLUE}" style="background-color:{BLUE};border-radius:999px;">
+            <a href="{esc(base)}" style="display:inline-block;padding-top:11px;padding-bottom:11px;padding-left:22px;padding-right:22px;font-family:{FONT};font-size:15px;line-height:1.2;color:#ffffff;text-decoration:none;font-weight:bold;border-radius:999px;">See them all</a>
           </td></tr>
         </table>
       </td></tr>

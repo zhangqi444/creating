@@ -7,68 +7,79 @@
    the dark set is applied by the .dark class, which main.jsx sets from the saved
    choice, the host's data-theme, or the OS. */
 :root {
+  /* Taken from sheilazhang.org as it is actually served — a Ghost site: a white
+     page, near-black Inter, and the owner's pink accent (#FF1A75). An earlier
+     version of this file matched a blue that lived only in an unpublished repo,
+     which is not what anyone sees at that address.
+
+     Two values are deliberately not the hub's. Its pink is 3.7:1 on white and
+     its grey #999 is 2.85:1 — both right for a filled button or a footer, both
+     too faint for small text. So --primary keeps the exact pink for buttons and
+     fills, --link is a deeper pink (5.2:1) for text, and --muted-foreground is a
+     darker grey (5.3:1). Side by side they read as the same colours. */
   --radius: 0.75rem;
-  --background: #f5f7fa;
-  --foreground: #171c24;
+  --background: #ffffff;
+  --foreground: #15171a;
   --card: #ffffff;
-  --card-foreground: #171c24;
+  --card-foreground: #15171a;
   --popover: #ffffff;
-  --popover-foreground: #171c24;
-  --primary: #2b63c9;
+  --popover-foreground: #15171a;
+  --primary: #ff1a75;
   --primary-foreground: #ffffff;
-  --secondary: #e8ecf2;
-  --secondary-foreground: #171c24;
-  --muted: #eaeef4;
-  --muted-foreground: #5d6673;
-  --accent: #dde7f7;
-  --accent-foreground: #1a4aa0;
+  --link: #d6005b;
+  --secondary: #f6f6f6;
+  --secondary-foreground: #15171a;
+  --muted: #f6f6f6;
+  --muted-foreground: #6b6b6b;
+  --accent: #fff0f6;
+  --accent-foreground: #c70055;
   --destructive: #b4653a;
-  --border: #d9dfe8;
-  --input: #d9dfe8;
-  --ring: #2b63c9;
-  --hero-from: #dbe8ff;
-  --hero-to: #f5f7fa;
-  /* From sheilazhang.org, so a card here casts the same shadow as a card
-     there. Two layers: a tight one that seats the surface on the page and a
-     wide soft one that lifts it off. Tailwind's own shadow scale is tuned for
-     a white page and goes flat on a dark one, which is why these are tokens
-     with a dark value of their own rather than utilities. */
-  --shadow: 0 1px 2px rgb(23 28 36 / 0.04), 0 6px 20px -8px rgb(23 28 36 / 0.1);
-  --shadow-lift: 0 2px 4px rgb(23 28 36 / 0.05), 0 14px 30px -10px rgb(23 28 36 / 0.18);
+  --border: #e6e6e6;
+  --input: #e6e6e6;
+  --ring: #ff1a75;
+  /* The hub has no coloured band behind its header, so neither does this. */
+  --hero-from: #ffffff;
+  --hero-to: #ffffff;
+  --shadow: 0 1px 2px rgb(21 23 26 / 0.04), 0 6px 20px -8px rgb(21 23 26 / 0.1);
+  --shadow-lift: 0 2px 4px rgb(21 23 26 / 0.05), 0 14px 30px -10px rgb(21 23 26 / 0.18);
   color-scheme: light;
 }
 
 .dark {
-  --background: #0f1318;
-  --foreground: #e7ebf1;
-  --card: #171c23;
-  --card-foreground: #e7ebf1;
-  --popover: #171c23;
-  --popover-foreground: #e7ebf1;
-  --primary: #8fb4f0;
-  --primary-foreground: #0a1a33;
-  --secondary: #222933;
-  --secondary-foreground: #e7ebf1;
-  --muted: #1c222b;
-  --muted-foreground: #9aa5b4;
-  --accent: #1b2a42;
-  --accent-foreground: #b7cdf5;
-  --destructive: #df9a6e;
-  --border: #2a323d;
-  --input: #2a323d;
-  --ring: #8fb4f0;
-  --hero-from: #16233a;
-  --hero-to: #0f1318;
-  /* Much deeper than the light pair: on a dark page a shadow has to be dark
-     enough to read at all, and the light values vanish completely. */
+  /* The hub has no dark theme of its own; this is its palette carried into one.
+     The pink lifts to #ff4f93 so it reads on near-black (5.8:1), and the button
+     text goes dark for the same reason. */
+  --background: #15171a;
+  --foreground: #e6e6e6;
+  --card: #1d2024;
+  --card-foreground: #e6e6e6;
+  --popover: #1d2024;
+  --popover-foreground: #e6e6e6;
+  --primary: #ff4f93;
+  --primary-foreground: #15171a;
+  --link: #ff6ba3;
+  --secondary: #22262b;
+  --secondary-foreground: #e6e6e6;
+  --muted: #22262b;
+  --muted-foreground: #a3a3a3;
+  --accent: #3a1a28;
+  --accent-foreground: #ff8fbb;
+  --destructive: #d08a62;
+  --border: #2e3238;
+  --input: #2e3238;
+  --ring: #ff4f93;
+  --hero-from: #15171a;
+  --hero-to: #15171a;
   --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px -8px rgb(0 0 0 / 0.5);
   --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 14px 30px -10px rgb(0 0 0 / 0.6);
   color-scheme: dark;
 }
 
 @theme inline {
-  /* The device's own UI font: nothing to download, native everywhere. */
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  /* Inter, as on sheilazhang.org — but served from this site, not a CDN: the
+     reading suite fails on any request to another host, and a font is exactly
+     the kind of thing that quietly becomes one. */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -81,6 +92,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-link: var(--link);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
@@ -167,7 +179,7 @@
   .prose h3 { font-size: 1.3em; }
   .prose h4 { font-size: 1.1em; }
   .prose a {
-    color: var(--primary);
+    color: var(--link);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-thickness: 1px;

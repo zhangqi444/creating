@@ -314,6 +314,8 @@ const shoot = async (pg, file) => {
       await pg.waitForSelector('[data-testid=hero]');
       check('no subscribe form while no endpoint is configured',
         (await pg.$('[data-testid=subscribe]')) === null);
+      check('and no Subscribe button in the bar either, since it would lead nowhere',
+        (await pg.$('[data-testid=subscribe-header]')) === null);
 
       // then on, the way a deployment does it: one value in site.json
       const on = JSON.parse(original);
@@ -327,6 +329,20 @@ const shoot = async (pg, file) => {
         return r.fulfill({ status: reply.status, contentType: 'application/json', body: reply.body });
       });
 
+      await pg.goto(base, { waitUntil: 'networkidle' });
+
+      /* The bar's pink Subscribe pill is the hub's; here it takes a reader to the
+         form rather than being a second one. Checked from a page that has no
+         form, since that is the case that has to travel. */
+      await pg.goto(base + '#/gallery', { waitUntil: 'networkidle' });
+      await pg.click('[data-testid=subscribe-header]');
+      await pg.waitForFunction(() => {
+        const el = document.querySelector('[data-testid=subscribe]');
+        if (!el) return false;
+        const r = el.getBoundingClientRect();
+        return r.top >= 0 && r.bottom <= innerHeight;
+      }, null, { timeout: 8000 }).then(() => true, () => false)
+        .then((ok) => check('the bar\'s Subscribe button brings a reader to the form, even from a page without one', ok));
       await pg.goto(base, { waitUntil: 'networkidle' });
       await pg.waitForSelector('[data-testid=subscribe]');
       check('the form appears once an endpoint is set', true);
@@ -386,21 +402,19 @@ const shoot = async (pg, file) => {
          wrong never gets the one that fixes it. */
       const sw = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').match(/register\("(sw\.js[^"]*)"\)/);
       check('the worker is registered under a versioned url', Boolean(sw && /\?v=[0-9a-f]{8}$/.test(sw[1])), sw ? sw[1] : 'no registration found');
-      /* The icon has to be asked for at a URL carrying its own digest. A
+      /* The icons have to be asked for at a URL carrying their digest. A
          browser caches a favicon harder than anything else — Chrome keeps one
-         in a store that outlives a hard reload — so at a fixed `favicon.svg` a
-         new icon reaches nobody who has been here before. Both the tab and the
-         header must ask for the same versioned URL, or they drift. */
+         in a store that outlives a hard reload — so at a fixed name a new icon
+         reaches nobody who has been here before. */
       const page = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
       const iconV = require('crypto').createHash('sha256')
-        .update(fs.readFileSync(path.join(DIST, 'favicon.svg'))).digest('hex').slice(0, 8);
+        .update(Buffer.concat(['favicon.png', 'apple-touch-icon.png'].map((f) => fs.readFileSync(path.join(DIST, f)))))
+        .digest('hex').slice(0, 8);
       const iconHref = (page.match(/<link[^>]*rel="icon"[^>]*href="([^"]+)"/) || [])[1];
       check('the tab icon is asked for at a url carrying its digest',
-        iconHref === 'favicon.svg?v=' + iconV, iconHref + ' vs favicon.svg?v=' + iconV);
-      const inApp = fs.readdirSync(path.join(DIST, 'assets'))
-        .filter((f) => f.endsWith('.js'))
-        .some((f) => fs.readFileSync(path.join(DIST, 'assets', f), 'utf8').includes('favicon.svg?v=' + iconV));
-      check('and the header asks for that same url, so the tab and the page cannot drift', inApp);
+        iconHref === 'favicon.png?v=' + iconV, iconHref + ' vs favicon.png?v=' + iconV);
+      const touchHref = (page.match(/<link[^>]*rel="apple-touch-icon"[^>]*href="([^"]+)"/) || [])[1];
+      check('and so is the home-screen icon', touchHref === 'apple-touch-icon.png?v=' + iconV, String(touchHref));
 
       /* The cache's name has to be a digest of what it holds. Everything the
          worker precaches keeps its file name between builds, and the cache is
@@ -409,7 +423,7 @@ const shoot = async (pg, file) => {
          visitor on the old one, out of a cache nothing will ever evict. */
       const cacheName = (fs.readFileSync(path.join(DIST, 'sw.js'), 'utf8').match(/CACHE = '([^']+)'/) || [])[1];
       const stamp = require('crypto').createHash('sha256')
-        .update(Buffer.concat(['manifest.webmanifest', 'favicon.svg'].map((f) => fs.readFileSync(path.join(DIST, f)))))
+        .update(Buffer.concat(['manifest.webmanifest', 'favicon.png', 'apple-touch-icon.png'].map((f) => fs.readFileSync(path.join(DIST, f)))))
         .digest('hex').slice(0, 8);
       check('the cache is named after what it holds, not a number someone raises by hand',
         cacheName === 'creating-' + stamp, cacheName + ' vs creating-' + stamp);

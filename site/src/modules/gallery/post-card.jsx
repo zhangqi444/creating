@@ -58,7 +58,7 @@ export function PostCard({ post, large = false }) {
       )}
       <div className={cn("mt-3", large && "mt-4")}>
         {post.tags.length > 0 && (
-          <div className="relative z-10 mb-1 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-wide text-primary">
+          <div className="relative z-10 mb-1 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-wide text-link">
             {post.tags.map((t) => <a key={t} href={href("/tag/" + t)} className="hover:underline">{t}</a>)}
           </div>
         )}

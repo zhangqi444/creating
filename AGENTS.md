@@ -250,10 +250,13 @@ Both suites must pass before a commit.
   colour, a byline of avatar · name · date · read time (dropped entirely when the
   blog names no author).
 - Dark mode is a first-class theme, not an inversion. Tokens in `src/index.css`
-  are the "Calm Scholar" neutrals shared with the sibling repositories, with the
-  blue accent this blog inherited.
-- Colour has one meaning: *primary* (blue) is links, topics and the one action
-  on a screen. Nothing else is coloured.
+  are sheilazhang.org's, taken from the site as served: white, near-black Inter,
+  pink `#ff1a75`. See docs/design.md for the two values deliberately darkened for
+  contrast. **Check a site by loading its address, not by reading a repository
+  that claims to be behind it** — this blog once matched a palette that existed
+  only in an unpublished repo.
+- Colour has one meaning: pink is links, topics and the one action on a screen —
+  `primary` for fills and buttons, `link` for text. Nothing else is coloured.
 - Every route is reachable from the header or the footer; the header folds to a
   menu on phones, so nothing may live only in the inline nav.
 - Dates render through `fmtDate` ("Sep 6, 2026"). Sentence case everywhere.

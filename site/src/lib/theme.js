@@ -16,7 +16,7 @@ export function applyTheme() {
   const dark = isDark()
   document.documentElement.classList.toggle("dark", dark)
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute("content", dark ? "#0F1318" : "#2B63C9")
+  if (meta) meta.setAttribute("content", dark ? "#15171A" : "#FFFFFF")
   listeners.forEach((fn) => fn(dark))
 }
 export function setTheme(theme) {

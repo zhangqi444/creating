@@ -195,7 +195,7 @@ export function Studio() {
       <section className="mt-5 rounded-xl border bg-card p-4" data-testid="studio-publish">
         {published ? (
           <>
-            <p className="flex items-center gap-2 text-sm font-medium text-primary">
+            <p className="flex items-center gap-2 text-sm font-medium text-link">
               <CheckIcon className="size-4" /> Published. Anyone with this link can see it.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-2">

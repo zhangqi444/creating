@@ -10,7 +10,8 @@ this project follows isee.
 
 - Work in `site/`. Content edits go in `content/**`, then re-run
   `python3 site/make_bundle.py` and commit the regenerated bundle.
-- Keep this site consistent with its siblings: same tokens (with this site's blue
+- The look is sheilazhang.org's, as the site is actually served (see
+  docs/design.md). Keep this site consistent with its siblings: same tokens (with this site's
   accent), component library, test layout and docs. A convention added to one
   belongs in the others.
 - The gallery feature here came from `zhangqi444/the-little-me`, which still runs

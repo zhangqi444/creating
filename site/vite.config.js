@@ -15,18 +15,18 @@ const ROOT = path.dirname(new URL(import.meta.url).pathname)
  * dropped only when its name changes, so the name is a digest of what is in it.
  * Change the icon and the name moves on its own; change nothing and it stays,
  * so a visitor is not made to re-install a worker for no reason. */
-const PRECACHED = ['manifest.webmanifest', 'favicon.svg']
+const PRECACHED = ['manifest.webmanifest', 'favicon.png', 'apple-touch-icon.png']
 
 /* The icon is asked for at a URL that carries its own digest.
  *
  * A browser caches a favicon far harder than it caches anything else — Chrome
  * keeps one in a store of its own that outlives a hard reload — so a new icon
- * at the old fixed `favicon.svg` reaches nobody who has already been here. The
+ * at an old fixed name reaches nobody who has already been here. The
  * worker had the same shape of problem twice over and was fixed twice; this was
  * the third instance, still sitting in the one place a person actually looks. */
 function iconVersion() {
-  const src = fs.readFileSync(path.join(ROOT, 'public', 'favicon.svg'))
-  return crypto.createHash('sha256').update(src).digest('hex').slice(0, 8)
+  const files = ['favicon.png', 'apple-touch-icon.png'].map((f) => fs.readFileSync(path.join(ROOT, 'public', f)))
+  return crypto.createHash('sha256').update(Buffer.concat(files)).digest('hex').slice(0, 8)
 }
 
 function swSource() {
@@ -90,9 +90,11 @@ function appTarget() {
         })
         google.push({ tag: 'script', attrs: { src: 'https://accounts.google.com/gsi/client', async: true, defer: true }, injectTo: 'head' })
       }
-      const icon = `favicon.svg?v=${iconVersion()}`
+      const v = iconVersion()
       return {
-        html: html.replace('href="favicon.svg"', `href="${icon}"`),
+        html: html
+          .replace('href="favicon.png"', `href="favicon.png?v=${v}"`)
+          .replace('href="apple-touch-icon.png"', `href="apple-touch-icon.png?v=${v}"`),
         tags: [
         ...google,
         { tag: 'link', attrs: { rel: 'manifest', href: 'manifest.webmanifest' }, injectTo: 'head' },
@@ -155,8 +157,6 @@ function siteAddress() {
 }
 
 export default defineConfig({
-  // The header shows the same file as the tab, so it must ask for the same URL.
-  define: { __ICON_HREF__: JSON.stringify(`favicon.svg?v=${iconVersion()}`) },
   root: ROOT,
   base: './',
   resolve: { alias: { '@': path.join(ROOT, 'src') } },

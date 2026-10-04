@@ -25,7 +25,7 @@ pictures in one grid is a page nobody can use.
 
 1. **The pictures are the site.** Every screen exists to get someone to a post
    and then out of the way. No sidebars, no widgets, no counters.
-2. **One colour, one meaning.** Blue is for links, topic labels and the single
+2. **One colour, one meaning.** Pink is for links, topic labels and the single
    action on a screen. Everything else is neutral, in both themes.
 3. **Pictures are first-class.** Cards lead with the picture; a post shows it
    large above the text; the gallery is a page of nothing else.
@@ -41,37 +41,57 @@ pictures in one grid is a page nobody can use.
 
 ## Theme
 
-The tokens are the "Calm Scholar" neutrals shared with the sibling repositories,
-with the blue accent this blog inherited from `the-little-me`. They are CSS
+The theme is sheilazhang.org's, taken from the site as it is actually served —
+a Ghost site with a white page, near-black Inter and the owner's pink accent.
+(An earlier version matched a blue that lived only in an unpublished repository
+for that site, which is not what anyone sees at the address. Look at the
+address, not a repository that claims to be behind it.) The tokens are CSS
 variables in `site/src/index.css`, mapped into Tailwind v4 with `@theme inline`.
 
 | Token | Light | Dark | Used for |
 |---|---|---|---|
-| `background` | `#f5f7fa` | `#0f1318` | page |
-| `card` | `#ffffff` | `#171c23` | cards, the lightbox |
-| `foreground` | `#171c24` | `#e7ebf1` | text |
-| `muted-foreground` | `#5d6673` | `#9aa5b4` | excerpts, bylines, captions |
-| `primary` | `#2b63c9` | `#8fb4f0` | links, topic labels, the avatar, the one button |
-| the mark | `#2b63c9` → `#6b4fc4` | same | the site mark, in `site/public/favicon.svg` |
-| `accent` | `#dde7f7` | `#1b2a42` | hover surfaces |
-| `border` | `#d9dfe8` | `#2a323d` | hairlines |
-| `hero-from` / `hero-to` | `#dbe8ff` → `#f5f7fa` | `#16233a` → `#0f1318` | the front page band |
-| `radius` | `0.75rem` | | cards, pictures, controls |
+| `background` | `#ffffff` | `#15171a` | page |
+| `card` | `#ffffff` | `#1d2024` | cards, the lightbox |
+| `foreground` | `#15171a` | `#e6e6e6` | text |
+| `muted-foreground` | `#6b6b6b` | `#a3a3a3` | excerpts, bylines, captions |
+| `primary` | `#ff1a75` | `#ff4f93` | buttons and fills — the hub's exact pink |
+| `link` | `#d6005b` | `#ff6ba3` | links and topic labels set in text |
+| `accent` | `#fff0f6` | `#3a1a28` | hover surfaces |
+| `border` | `#e6e6e6` | `#2e3238` | hairlines |
+| `radius` | `0.75rem` | | cards, pictures; buttons are pills |
 
-Type is the device's own UI stack. Sizes: site name in the hero `text-6xl`
-extrabold; post title `text-3xl` bold, tight tracking; the lead card's title
-`text-lg`, a grid card's `text-sm`, both at reading weight so they sit under the
-picture rather than shouting over it; body `1.125rem` at line-height 1.75 in a
-48rem column (about 720px, roughly 70 characters); excerpts and bylines `text-sm`
-muted; topic labels `text-xs` uppercase, letter-spaced, blue.
+Two of those are deliberately not the hub's own. Its pink is 3.7:1 on white and
+its grey `#999` is 2.85:1: right for a filled button or a footer, too faint for
+small text. So `primary` keeps the exact pink for anything filled, `link` is a
+deeper pink at 5.2:1 for text, and the muted grey is darkened to 5.3:1. Side by
+side they read as the same colours.
+
+Type is Inter, as on the hub, served from this site through `@fontsource/inter`
+(400, 600, 700) rather than from a CDN — the reading suite fails on any request
+to another host. Sizes: the site name in the bar `26px` bold; post title
+`text-3xl` bold, tight tracking; the lead card's title `text-lg`, a grid card's
+`text-sm`, both at reading weight so they sit under the picture rather than
+shouting over it; body `1.125rem` at line-height 1.75 in a 48rem column (about
+720px, roughly 70 characters); excerpts and bylines `text-sm` muted; topic labels
+`text-xs` uppercase, letter-spaced, pink.
+
+The icon is the hub's own, `sheila-logo-2.jpg`, downloaded and resized here into
+`favicon.png`, `apple-touch-icon.png` and the manifest's two sizes — the hub
+serves it from the old Ghost CDN, and nothing on this site is allowed to.
 
 ## Layout
 
-- **Header**: sticky, translucent, 3.5rem. Brand (the site mark, then the name), the nav from `site.json`, a pencil to the studio
-  when sign-in is configured, the theme toggle. Under 640px the nav folds into a
-  menu button that opens a list below the bar and closes on navigation.
-- **Front page**: a soft blue-to-background gradient band with the name and
-  tagline; then the newest post as a wide card at 3:2 with the byline under it;
+- **Header**: laid out as the hub lays out its own — sticky, full width, 6rem
+  tall: the nav from `site.json` on the left, the site's name centred in bold,
+  and on the right a pencil to the studio when sign-in is configured, the theme
+  toggle and the hub's pink pill **Subscribe**, which takes a reader to the form
+  (from a page without one, it goes to the front page first). The pill is not
+  shown when there is no newsletter or on somebody else's blog, the same rules
+  as the form. Under 640px the name moves left, the pill goes, and the nav folds
+  into a menu button that opens a list below the bar.
+- **Front page**: the tagline centred under the bar — not the name again, which
+  the bar already carries, though it stays as the page's heading for anyone
+  reading by structure; then the newest post as a wide card at 3:2 with the byline under it;
   then the rest at 4:3 in a grid of one, two or three columns; then the topics as
   pills with counts. The date appears once per card: beside the title, or in the
   byline on the lead card, never both.

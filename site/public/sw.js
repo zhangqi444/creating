@@ -14,7 +14,7 @@
    remember — change the icon, forget the number, and every returning visitor
    keeps the old icon out of a cache nothing will ever evict. */
 var CACHE = 'creating-__BUILD__';
-var PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'favicon.svg'];
+var PRECACHE = ['./', 'index.html', 'manifest.webmanifest', 'favicon.png', 'apple-touch-icon.png'];
 
 /* Only a real answer is worth keeping.
  *

@@ -1,4 +1,4 @@
-/* Home: the hero with the site's name and tagline, the lead post, then the rest. */
+/* Home: the tagline under the bar's centred name, the lead post, then the rest. */
 import { useState } from "react"
 
 import { C, tags } from "@/modules/gallery/content"
@@ -21,10 +21,15 @@ export function Home() {
   const allTags = tags()
   return (
     <>
-      <section data-testid="hero" className="border-b bg-gradient-to-b from-hero-from to-hero-to">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-6xl">{C.site.title}</h1>
-          <p className="mt-4 max-w-xl text-lg text-muted-foreground sm:text-2xl">{C.site.description}</p>
+      {/* The site's name is already centred in the bar, as on sheilazhang.org, so
+          the front page does not say it a second time in larger type. It stays
+          as the page's heading for anyone reading by structure rather than by
+          eye; what shows is the tagline, centred under the name the way a Ghost
+          home page carries its description. */}
+      <section data-testid="hero" className="border-b">
+        <div className="mx-auto max-w-3xl px-4 pb-12 pt-6 text-center sm:px-6 sm:pb-16 sm:pt-10">
+          <h1 className="sr-only">{C.site.title}</h1>
+          <p className="text-xl leading-snug text-muted-foreground text-balance sm:text-2xl">{C.site.description}</p>
         </div>
       </section>
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">

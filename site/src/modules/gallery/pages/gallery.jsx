@@ -51,7 +51,7 @@ export function Gallery() {
                 <span>{open.date ? fmtDate(open.date) : open.alt}</span>
                 {open.slug && (
                   <a href={href("/post/" + open.slug)} data-testid="lightbox-post"
-                    className="font-medium text-primary hover:underline" onClick={() => setOpen(null)}>
+                    className="font-medium text-link hover:underline" onClick={() => setOpen(null)}>
                     Open post
                   </a>
                 )}

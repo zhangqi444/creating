@@ -72,7 +72,7 @@ export function Subscribe({ className }) {
       </p>
 
       {state === "done" ? (
-        <p className="mt-4 text-sm font-medium text-primary" data-testid="subscribe-done" role="status">
+        <p className="mt-4 text-sm font-medium text-link" data-testid="subscribe-done" role="status">
           Thank you. You are on the list.
         </p>
       ) : (

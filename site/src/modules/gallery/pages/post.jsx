@@ -31,7 +31,7 @@ export function Post({ slug }) {
       )}
       <header className="mx-auto mt-8 max-w-3xl">
         {post.tags.length > 0 && (
-          <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide text-primary">
+          <div className="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide text-link">
             {post.tags.map((t) => <a key={t} href={href("/tag/" + t)} className="hover:underline">{t}</a>)}
           </div>
         )}
