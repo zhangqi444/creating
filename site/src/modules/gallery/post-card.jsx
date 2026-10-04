@@ -50,7 +50,7 @@ export function PostCard({ post, large = false }) {
     <article data-testid="post-card" className="group relative">
       {post.image && (
         <a href={to} tabIndex={-1} aria-hidden="true"
-          className="block overflow-hidden rounded-xl border bg-muted shadow-xs transition-shadow group-hover:shadow-md">
+          className="surface surface-lift block overflow-hidden rounded-xl border bg-muted">
           <img src={small(post)} alt={post.imageAlt || titleOf(post)} loading={large ? "eager" : "lazy"} decoding="async"
             className={cn("w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]",
               large ? "aspect-[3/2]" : "aspect-[4/3]")} />

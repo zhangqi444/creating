@@ -64,7 +64,7 @@ export function Subscribe({ className }) {
   }
 
   return (
-    <section className={cn("rounded-xl border bg-card p-6 sm:p-8", className)} data-testid="subscribe"
+    <section className={cn("surface rounded-xl border bg-card p-6 sm:p-8", className)} data-testid="subscribe"
       aria-labelledby="subscribe-heading">
       <h2 id="subscribe-heading" className="text-lg font-semibold tracking-tight">New pictures by email</h2>
       <p className="mt-1 text-sm text-muted-foreground">

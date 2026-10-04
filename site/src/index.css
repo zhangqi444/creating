@@ -28,6 +28,13 @@
   --ring: #2b63c9;
   --hero-from: #dbe8ff;
   --hero-to: #f5f7fa;
+  /* From sheilazhang.org, so a card here casts the same shadow as a card
+     there. Two layers: a tight one that seats the surface on the page and a
+     wide soft one that lifts it off. Tailwind's own shadow scale is tuned for
+     a white page and goes flat on a dark one, which is why these are tokens
+     with a dark value of their own rather than utilities. */
+  --shadow: 0 1px 2px rgb(23 28 36 / 0.04), 0 6px 20px -8px rgb(23 28 36 / 0.1);
+  --shadow-lift: 0 2px 4px rgb(23 28 36 / 0.05), 0 14px 30px -10px rgb(23 28 36 / 0.18);
   color-scheme: light;
 }
 
@@ -52,6 +59,10 @@
   --ring: #8fb4f0;
   --hero-from: #16233a;
   --hero-to: #0f1318;
+  /* Much deeper than the light pair: on a dark page a shadow has to be dark
+     enough to read at all, and the light values vanish completely. */
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 20px -8px rgb(0 0 0 / 0.5);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 14px 30px -10px rgb(0 0 0 / 0.6);
   color-scheme: dark;
 }
 
@@ -110,6 +121,36 @@
 /* Post body. Written by hand against the tokens so dark mode is a theme,
    not an inversion; the measure is capped by the column, not here. */
 @layer components {
+  /* A raised surface, and what it does when you point at one that leads
+     somewhere — the card treatment from sheilazhang.org, so the hub and this
+     blog feel like the same hand. The lift is small on purpose: 2px and a
+     wider shadow read as "this is a thing you can press" without the page
+     moving about. The border warms toward the accent at the same time, which
+     is what carries it in dark mode, where shadows do much less work. */
+  .surface {
+    box-shadow: var(--shadow);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  }
+  /* Also when an ancestor card is hovered: on a post card the whole card is the
+     link, and the picture is only the part that carries the frame. */
+  .surface-lift:hover,
+  .group:hover .surface-lift {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+  }
+  /* Pressing puts it back down, so a tap has somewhere to land. */
+  .surface-lift:active,
+  .group:active .surface-lift { transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    /* The base block above kills transitions but not the transform itself,
+       which would still jump. */
+    /* Also when an ancestor card is hovered: on a post card the whole card is the
+     link, and the picture is only the part that carries the frame. */
+  .surface-lift:hover,
+  .group:hover .surface-lift { transform: none; }
+  }
+
   .prose {
     font-size: 1.125rem;
     line-height: 1.75;
