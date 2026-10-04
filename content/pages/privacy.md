@@ -3,7 +3,7 @@ title: Privacy
 updated: 2026-10-01
 ---
 
-Creating has no server of its own. It keeps nothing about you, because it has
+This site has no server of its own. It keeps nothing about you, because it has
 nowhere to keep it.
 
 **Signing in.** Signing in with Google lets this site make files in your own

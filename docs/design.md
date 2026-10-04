@@ -89,9 +89,11 @@ serves it from the old Ghost CDN, and nothing on this site is allowed to.
   shown when there is no newsletter or on somebody else's blog, the same rules
   as the form. Under 640px the name moves left, the pill goes, and the nav folds
   into a menu button that opens a list below the bar.
-- **Front page**: the tagline centred under the bar — not the name again, which
-  the bar already carries, though it stays as the page's heading for anyone
-  reading by structure; then the newest post as a wide card at 3:2 with the byline under it;
+- **Front page**: opens straight onto the pictures, as the owner asked — no
+  tagline, and not the name again, which the bar already carries (it stays as
+  the page's heading for anyone reading by structure). The tagline in
+  `site.json` still describes the site to search engines in the page's head,
+  where nobody reads it. Then the newest post as a wide card at 3:2 with the byline under it;
   then the rest at 4:3 in a grid of one, two or three columns; then the topics as
   pills with counts. The date appears once per card: beside the title, or in the
   byline on the lead card, never both.

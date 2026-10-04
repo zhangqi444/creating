@@ -3,7 +3,7 @@ title: Terms
 updated: 2026-04-05
 ---
 
-Creating is free, and is offered as it is.
+This site is free, and is offered as it is.
 
 **What it is.** A place to keep the pictures you make — in your own Google
 Drive — and to publish them as a blog if you want to.

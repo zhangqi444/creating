@@ -187,7 +187,12 @@ Three rules follow from that, and they are not negotiable:
 - **Her writing is sacred.** Never rewrite, shorten or "improve" the text of a
   post. Fix a typo only when asked.
 - **Her name appears nowhere.** Not in the site, the docs or a commit message.
-  The owner asked for that directly, and it holds here as it does there.
+  The owner asked for that directly, and it holds here as it does there. One
+  exception, also the owner's direct decision: the site's *title* is the title
+  sheilazhang.org uses — it is already the domain, so the bar says what the
+  address says. That is the whole of it. No byline, author field, caption, alt
+  text, doc or commit message adds a name, and the exception is not a precedent
+  for one.
 - **Never invent a fact about her.** The About page is the one place with prose
   about her, and it is not to be extended with made-up biography.
 

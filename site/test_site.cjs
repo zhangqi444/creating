@@ -145,7 +145,11 @@ const shoot = async (pg, file) => {
     await pg.goto(base, { waitUntil: 'networkidle' });
     await pg.waitForSelector('[data-testid=hero]');
     check('the blog answers the site root', true);
-    check('hero shows the site title and tagline', (await pg.textContent('[data-testid=hero]')).includes(BUNDLE.site.title) && (await pg.textContent('[data-testid=hero]')).includes(BUNDLE.site.description));
+    check('the page is headed with the site title', (await pg.textContent('[data-testid=hero]')).trim() === BUNDLE.site.title);
+    check('and the bar shows it', (await pg.textContent('[data-testid=brand]')).trim() === BUNDLE.site.title);
+    // The owner asked for the tagline line to go. It still describes the site to
+    // search engines in the page's head, but nothing a reader sees says it.
+    check('the tagline is not shown on the page', !(await pg.evaluate((d) => document.body.innerText.includes(d), BUNDLE.site.description)));
     check('document title is the site title', (await pg.title()) === BUNDLE.site.title);
     const PAGE = 24;
     const firstPage = Math.min(posts.length, PAGE + 1);   // the lead card plus one page of the rest
