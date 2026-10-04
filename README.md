@@ -224,6 +224,7 @@ given address reads this blog.
     npm run build     # → site/dist
     npm test          # both Playwright suites, against dist/ (needs Chromium)
     python3 site/make_thumbs.py   # smaller copies of any new picture (needs Pillow)
+    python3 site/make_broadcast.py # the email for the newest post (nothing is sent)
     python3 site/make_bundle.py   # after editing content/**; commit the bundle
 
 ## Publishing on GitHub Pages

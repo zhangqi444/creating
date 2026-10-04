@@ -3,3 +3,4 @@ Thumbs.db
 site/node_modules/
 site/dist/
 site/shot-*.png
+site/broadcast/

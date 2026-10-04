@@ -68,6 +68,7 @@ site/
   google.json              the Google client id and browser API key for local dev (public values; empty in the repo — the deployed site takes them from the OAUTH_CLIENT_ID and GOOGLE_API_KEY repository variables instead)
   make_bundle.py           content/** → site/public/content/bundle.json (the committed content)
   make_thumbs.py           smaller copies of every picture, for cards and the post page (local tool; needs Pillow)
+  make_broadcast.py        the email for a new picture, built from the bundle (local tool; writes site/broadcast/, sends nothing)
   fetch_images.py          brings a post's remote picture into the repository (local tool)
   index.html               Vite entry
   vite.config.js           base './', the manifest, the service worker and the address
@@ -209,6 +210,7 @@ npm run build      # → site/dist   (the Pages build)
 npm test           # both Playwright suites, against the built dist/
 python3 site/make_bundle.py    # rebuild bundle.json after editing content/**
 python3 site/make_thumbs.py    # smaller copies of any new picture (needs Pillow); then make_bundle.py again
+python3 site/make_broadcast.py # the email for the newest post → site/broadcast/ (nothing is sent)
 ```
 
 The generated bundle is committed, and CI fails the build if it has drifted from

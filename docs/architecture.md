@@ -176,3 +176,26 @@ than a Ghost import artifact; and the build declines to write a `CNAME` for a
 None of the other repositories is modified by this work, and none can be read
 from here: `drive.file` grants an app access only to the files it created, and
 each uses a different client id in a different Google Cloud project.
+
+## Telling people about a new picture
+
+The subscribe form collects addresses; `site/make_broadcast.py` makes the thing
+that goes to them, from the same bundle the site renders, so the email and the
+page cannot disagree about what was posted. It writes `site/broadcast/` and
+sends nothing — the output becomes a **draft** in Resend that a person reads and
+presses send on. That is deliberate: putting something in front of people is
+only a decision if it can still be stopped, and a script that mails strangers
+the moment a commit lands is not that. The generated files are ignored by git,
+being derived from the bundle like `dist/`.
+
+Three constraints come from the content rules rather than from email:
+
+- the post's own title and caption go in verbatim — nothing is summarised or
+  written *about* them;
+- no author name appears anywhere, so the mail is from the blog, not a person,
+  and it is sent from the `sheilazhang.org` domain for the same reason;
+- pictures are absolute URLs on this site's own domain, using the 800px copy,
+  which is the right size for a 600px column at two times density.
+
+The HTML is tables and inline styles because mail clients are twenty years
+behind browsers; a `div` layout with a stylesheet collapses in Outlook.
