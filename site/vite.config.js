@@ -17,6 +17,18 @@ const ROOT = path.dirname(new URL(import.meta.url).pathname)
  * so a visitor is not made to re-install a worker for no reason. */
 const PRECACHED = ['manifest.webmanifest', 'favicon.svg']
 
+/* The icon is asked for at a URL that carries its own digest.
+ *
+ * A browser caches a favicon far harder than it caches anything else — Chrome
+ * keeps one in a store of its own that outlives a hard reload — so a new icon
+ * at the old fixed `favicon.svg` reaches nobody who has already been here. The
+ * worker had the same shape of problem twice over and was fixed twice; this was
+ * the third instance, still sitting in the one place a person actually looks. */
+function iconVersion() {
+  const src = fs.readFileSync(path.join(ROOT, 'public', 'favicon.svg'))
+  return crypto.createHash('sha256').update(src).digest('hex').slice(0, 8)
+}
+
 function swSource() {
   const src = fs.readFileSync(path.join(ROOT, 'public', 'sw.js'), 'utf8')
   const files = PRECACHED.map((f) => fs.readFileSync(path.join(ROOT, 'public', f)))
@@ -62,7 +74,7 @@ function appTarget() {
     closeBundle() {
       fs.writeFileSync(path.join(ROOT, 'dist', 'sw.js'), swSource())
     },
-    transformIndexHtml() {
+    transformIndexHtml(html) {
       // Nothing is written when there is no client id, so the page simply has
       // no sign-in — and a test can supply its own config before the app loads
       // rather than fighting a script that has already set these to empty.
@@ -78,7 +90,10 @@ function appTarget() {
         })
         google.push({ tag: 'script', attrs: { src: 'https://accounts.google.com/gsi/client', async: true, defer: true }, injectTo: 'head' })
       }
-      return [
+      const icon = `favicon.svg?v=${iconVersion()}`
+      return {
+        html: html.replace('href="favicon.svg"', `href="${icon}"`),
+        tags: [
         ...google,
         { tag: 'link', attrs: { rel: 'manifest', href: 'manifest.webmanifest' }, injectTo: 'head' },
         {
@@ -93,7 +108,8 @@ function appTarget() {
           children: 'if("serviceWorker" in navigator)addEventListener("load",function(){navigator.serviceWorker.register("sw.js?v=' + swVersion() + '")});',
           injectTo: 'body',
         },
-      ]
+        ],
+      }
     },
   }
 }
@@ -139,6 +155,8 @@ function siteAddress() {
 }
 
 export default defineConfig({
+  // The header shows the same file as the tab, so it must ask for the same URL.
+  define: { __ICON_HREF__: JSON.stringify(`favicon.svg?v=${iconVersion()}`) },
   root: ROOT,
   base: './',
   resolve: { alias: { '@': path.join(ROOT, 'src') } },

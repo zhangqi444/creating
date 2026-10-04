@@ -386,6 +386,22 @@ const shoot = async (pg, file) => {
          wrong never gets the one that fixes it. */
       const sw = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8').match(/register\("(sw\.js[^"]*)"\)/);
       check('the worker is registered under a versioned url', Boolean(sw && /\?v=[0-9a-f]{8}$/.test(sw[1])), sw ? sw[1] : 'no registration found');
+      /* The icon has to be asked for at a URL carrying its own digest. A
+         browser caches a favicon harder than anything else — Chrome keeps one
+         in a store that outlives a hard reload — so at a fixed `favicon.svg` a
+         new icon reaches nobody who has been here before. Both the tab and the
+         header must ask for the same versioned URL, or they drift. */
+      const page = fs.readFileSync(path.join(DIST, 'index.html'), 'utf8');
+      const iconV = require('crypto').createHash('sha256')
+        .update(fs.readFileSync(path.join(DIST, 'favicon.svg'))).digest('hex').slice(0, 8);
+      const iconHref = (page.match(/<link[^>]*rel="icon"[^>]*href="([^"]+)"/) || [])[1];
+      check('the tab icon is asked for at a url carrying its digest',
+        iconHref === 'favicon.svg?v=' + iconV, iconHref + ' vs favicon.svg?v=' + iconV);
+      const inApp = fs.readdirSync(path.join(DIST, 'assets'))
+        .filter((f) => f.endsWith('.js'))
+        .some((f) => fs.readFileSync(path.join(DIST, 'assets', f), 'utf8').includes('favicon.svg?v=' + iconV));
+      check('and the header asks for that same url, so the tab and the page cannot drift', inApp);
+
       /* The cache's name has to be a digest of what it holds. Everything the
          worker precaches keeps its file name between builds, and the cache is
          dropped only when its name changes — so with a hand-raised version,

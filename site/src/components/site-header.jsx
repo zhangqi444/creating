@@ -41,7 +41,7 @@ export function SiteHeader({ route }) {
           {/* The same file the browser tab shows, rather than a second drawing of
               the mark that would drift from it — and rather than the site's
               initial, which tied the brand to a name that may yet change. */}
-          <img src="favicon.svg" alt="" width="28" height="28" className="size-7 shrink-0" />
+          <img src={__ICON_HREF__} alt="" width="28" height="28" className="size-7 shrink-0" />
           <span>{C.site.title}</span>
         </a>
         <nav className="ml-4 hidden items-center gap-1 sm:flex" data-testid="nav">{links}</nav>
